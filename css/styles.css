@@ -7,17 +7,23 @@
   height: 600px;
   background-image: url("../images/board.jpg");
   background-size: cover;
+  display: grid;
+  grid-template-columns: 13% 74% 13%;
+  grid-template-rows: 13% 74% 13%;
+}
+#gameboard > div {
+  background-color: rgba(255, 169, 169, 0.5);
+  border: 2px solid blueviolet;
 }
 #top-row {
-  display: flex;
+  grid-column: 1 / span 3;
 }
-#top-row * {
-  width: 60px;
-  height: 80px;
-  background-color: rgba(0, 0, 0, 0.5);
+#left-column {
+
 }
-#top-row .corner {
-  width: 95px;
-  height: 80px;
-  background-color: rgba(0, 0, 0, 0.5);
+#right-column {
+
+}
+#bottom-row {
+  grid-column: 1 / span 3;
 }
