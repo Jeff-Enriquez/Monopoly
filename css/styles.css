@@ -18,6 +18,9 @@
   grid-column: 1 / span 3;
   display: flex;
 }
+#bottom-row {
+  flex-direction: row-reverse;
+}
 #top-row > div, #bottom-row > div{
   border: .008px solid blue;
   width: 50px;
@@ -29,6 +32,9 @@
 #left-column, #right-column {
   display: flex;
   flex-direction: column;
+}
+#left-column {
+  flex-direction: column-reverse;
 }
 #left-column > div, #right-column > div {
   border: .008px solid blue;
