@@ -15,15 +15,26 @@
   background-color: rgba(255, 169, 169, 0.5);
   border: 2px solid blueviolet;
 }
-#top-row {
+#top-row, #bottom-row {
   grid-column: 1 / span 3;
+  display: flex;
 }
-#left-column {
-
+#top-row > div, #bottom-row > div{
+  background-color: rgba(255,255,255,.5);
+  border: .008px solid blue;
+  width: 50px;
+  height: 74px;
 }
-#right-column {
-
+#top-row > .corner, #bottom-row > .corner {
+  width: 78px
 }
-#bottom-row {
-  grid-column: 1 / span 3;
+#left-column, #right-column {
+  display: flex;
+  flex-direction: column;
+}
+#left-column > div, #right-column > div {
+  background-color: rgba(255,255,255,.5);
+  border: .008px solid blue;
+  width: 74px;
+  height: 50px;
 }
