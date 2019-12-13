@@ -241,7 +241,6 @@ let accordion = document.querySelector("#accordion");
 const playerColors = ["red", "purple", "green", "blue"];
 let colorIdx = 0;
 /* -------- Player class -------- */
-let currentPlayer = "";
 class Player {
   constructor(name) {
     this.name = name;
@@ -304,7 +303,6 @@ class Player {
   rollDice() {
     let roll = Math.ceil(Math.random()*6) + Math.ceil(Math.random()*6);
     this.movePlayer(roll);
-    currentPlayer = this.name;
     landedOn(this, objSquares[this.location]);
     return roll;
   }
@@ -313,6 +311,8 @@ class Player {
 let player1 = new Player("Jeff");
 let player2 = new Player("Zane");
 let player3 = new Player("Sophia");
+const players = [player1, player2, player3];
+let playerIdx = 0;
 
 
 /*----- constants -----*/
@@ -320,6 +320,15 @@ const emptyDiv = document.querySelector("#empty div");
 const emptyP = document.querySelector("#empty-p");
 const emptyBtn1 = document.querySelector("#btn1");
 const emptyBtn2 = document.querySelector("#btn2");
+const rollDiceBtn = document.querySelector("#roll-dice");
+rollDiceBtn.addEventListener("click", function () {
+  players[playerIdx].rollDice();
+  if(playerIdx >= players.length-1) {
+    playerIdx = 0 
+  } else {
+    playerIdx++;
+  }
+})
 /*----- app's state (variables) -----*/
 
 /*----- cached element references -----*/
