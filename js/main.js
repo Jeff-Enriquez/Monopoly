@@ -15,6 +15,7 @@ let objSquares = [
         this.owner.money(rent);
       } else {
         //would player.name like to buy?
+        buyProperty(player, "Mediterranean Ave");
         //if yes: bought = true;
         //this.owner = player;
       }
@@ -111,51 +112,28 @@ let player1 = new Player("Jeff");
 let player2 = new Player("Zane");
 let player3 = new Player("Sophia");
 
-/*
-
-init() {
-  players given 1500 in money
-  players start at GO
-  All properties are unsold
-  Shuffle Chance and Community Chest
-  player 1 rolls first
-}
-render() {
-  playermove()
-  propertyPurchase()
-  renderDisplay()
-  playerLost()
-}
-playermove(){
-  roll dice
-}
-playerLost() {
-  if no money
-}
-
-propertyPurchase() {
-  playerMoney -= propertyCost
-  property.propertyName.owner = playerName;
-}
-
-display() {
-  location of player
-  player money
-  update player history
-  if(winner())
-}
-
-winner() {
-  all players - 1, have 0 money
-}
-*/
 
 /*----- constants -----*/
-
+const emptyDiv = document.querySelector("#empty div");
+const emptyP = document.querySelector("#empty-p");
+const emptyBtn1 = document.querySelector("#btn1");
+const emptyBtn2 = document.querySelector("#btn2");
 /*----- app's state (variables) -----*/
 
 /*----- cached element references -----*/
 
 /*----- event listeners -----*/
+emptyBtn1.addEventListener("click", function() { 
+  emptyDiv.setAttribute("style", "visibility: hidden");
+  alert("button 1!"); 
+});
+emptyBtn2.addEventListener("click", function() { 
+  emptyDiv.setAttribute("style", "visibility: hidden");
+  alert("button 2!"); 
+});
 
 /*----- functions -----*/
+function buyProperty(player, property) {
+  emptyP.textContent = `${player.name} would you like to buy ${property}?`;
+  emptyDiv.setAttribute("style", "visibility: visible");
+}
