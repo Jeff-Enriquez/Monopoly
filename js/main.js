@@ -1,4 +1,27 @@
 
+/* -------- objSquares is the value and properties of each square space ---------- */
+let objSquares = [
+  { //Go
+    landedOn: function (player) {
+      console.log(`${player.name} landed on GO and collects $200`);
+    }
+  },
+  {//Mediterranean Ave
+    bought: false,
+    landedOn: function (player) {
+      console.log(`${player.name} landed on Mediterranean Ave`);
+      if (bought) {
+        player.money(-rent);
+        this.owner.money(rent);
+      } else {
+        //would player.name like to buy?
+        //if yes: bought = true;
+        //this.owner = player;
+      }
+    },
+    owner: undefined
+  }
+]
 /* ------- boardSquares is the game sqaces --------- */
 const board = []
 board.push(document.querySelectorAll("#bottom-row > div"));
@@ -11,16 +34,34 @@ board.forEach(function(node) {
     boardSquares.push(obj);
   })
 })
+
+/* ------- test function -------- */
+$( function() {
+  $( "#accordion" ).accordion();
+} );
 /* ------- player color --------- */
+let accordion = document.querySelector("#accordion");
 const playerColors = ["red", "purple", "green", "blue"];
 let colorIdx = 0;
 /* -------- Player class -------- */
 class Player {
   constructor(name) {
     this.name = name;
-    this.money = 1500;
+    this._money = 1500;
     this.location = 0;
     this.createPlayerIcon();
+    this.createPlayerDisplay();
+  }
+  createPlayerDisplay() {
+    this.playerDisplay = document.createElement("p");
+    this.playerDisplay.textContent = `Money: ${this._money}`;
+    let h3 = document.createElement("h3");
+    h3.textContent = this.name;
+    let div = document.createElement("div");
+    div.setAttribute("id", this.name);
+    accordion.appendChild(h3);
+    accordion.appendChild(div);
+    document.querySelector(`#${this.name}`).appendChild(this.playerDisplay);  
   }
   createPlayerIcon() {
     this.playerIcon = document.createElement("div");
@@ -33,13 +74,13 @@ class Player {
     colorIdx ++;
   }
   money(value = 0) {
-    if(value = 0) {
-      return this.money;
-    }
-    if(this.money += value < 0) {
+    if(value == 0) {
+      return this._money;
+    } else if(this._money + value < 0) {
       return undefined;
     }
-    this.money += value;
+    this._money += value;
+    this.playerDisplay.textContent = `Money: ${this._money}`;
   }
   movePlayer(roll) {
     boardSquares[this.location].removeChild(this.playerIcon);
@@ -68,6 +109,7 @@ class Player {
 
 let player1 = new Player("Jeff");
 let player2 = new Player("Zane");
+let player3 = new Player("Sophia");
 
 /*
 

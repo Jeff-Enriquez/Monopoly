@@ -7,24 +7,15 @@
   <link href="css/reset.css" rel="stylesheet" type="text/css">
   <link href="css/styles.css" rel="stylesheet" type="text/css">
   <script src="js/main.js" defer></script>
-  <title>Document</title>
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <title>Monopoly</title>
 </head>
 <body>
-  <div id="gameboard">
-    <div id="top-row">
-      <div class="corner"></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div class="corner"></div>
-    </div>
-    <div id="left-column">
+  <div id="page-container">
+    <div id="gameboard">
+      <div id="top-row">
+        <div class="corner"></div>
         <div></div>
         <div></div>
         <div></div>
@@ -34,9 +25,21 @@
         <div></div>
         <div></div>
         <div></div>
-    </div>
-    <div id="empty"></div>
-    <div id="right-column">
+        <div class="corner"></div>
+      </div>
+      <div id="left-column">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+      <div id="empty"></div>
+      <div id="right-column">
         <div></div>
         <div></div>
         <div></div>
@@ -46,8 +49,8 @@
         <div></div>
         <div></div>
         <div></div>      
-    </div>
-    <div id="bottom-row">
+      </div>
+      <div id="bottom-row">
         <div class="corner"></div>
         <div></div>
         <div></div>
@@ -59,7 +62,12 @@
         <div></div>
         <div></div>
         <div class="corner"></div>      
+      </div>
+    </div>
+    <div id="content">
+        <div id="accordion">
+        </div>
     </div>
   </div>
-</body>
-</html>
+  </body>
+  </html>
