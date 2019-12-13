@@ -2,26 +2,52 @@
 /* -------- objSquares is the value and properties of each square space ---------- */
 let objSquares = [
   { //Go
-    landedOn: function (player) {
-      console.log(`${player.name} landed on GO and collects $200`);
-    }
+    name: "GO",
   },
-  {//Mediterranean Ave
+  {
+    name: "Mediterranean Ave",
     bought: false,
-    landedOn: function (player) {
-      console.log(`${player.name} landed on Mediterranean Ave`);
-      if (bought) {
-        player.money(-rent);
-        this.owner.money(rent);
-      } else {
-        //would player.name like to buy?
-        buyProperty(player, "Mediterranean Ave");
-        //if yes: bought = true;
-        //this.owner = player;
-      }
-    },
-    owner: undefined
-  }
+    owner: undefined,
+    cost: 60,
+    rent: 2,
+  },
+  {
+    name: "Community Chest",
+  },
+  {
+    name: "Baltic Ave",
+    bought: false,
+    owner: undefined,
+    cost: 60,
+    rent: 4,
+  },
+  {
+    name: "Income Tax",
+  },
+  {
+    name: "Reading Railroad",
+    bought: false,
+    owner: undefined,
+    cost: 200,
+    rent: 25,
+  },
+  {
+    name: "Oriental Ave",
+    bought: false,
+    owner: undefined,
+    cost: 100,
+    rent: 6,
+  },
+  {
+    name: "Chance",
+  },
+  {
+    name: "Vermont Ave",
+    bought: false,
+    owner: undefined,
+    cost: 100,
+    rent: 6,
+  },
 ]
 /* ------- boardSquares is the game sqaces --------- */
 const board = []
@@ -45,6 +71,7 @@ let accordion = document.querySelector("#accordion");
 const playerColors = ["red", "purple", "green", "blue"];
 let colorIdx = 0;
 /* -------- Player class -------- */
+let currentPlayer = "";
 class Player {
   constructor(name) {
     this.name = name;
@@ -104,6 +131,7 @@ class Player {
   rollDice() {
     let roll = Math.ceil(Math.random()*6) + Math.ceil(Math.random()*6);
     this.movePlayer(roll);
+    currentPlayer = this.name;
     return roll;
   }
 }
@@ -123,17 +151,29 @@ const emptyBtn2 = document.querySelector("#btn2");
 /*----- cached element references -----*/
 
 /*----- event listeners -----*/
-emptyBtn1.addEventListener("click", function() { 
-  emptyDiv.setAttribute("style", "visibility: hidden");
-  alert("button 1!"); 
-});
-emptyBtn2.addEventListener("click", function() { 
-  emptyDiv.setAttribute("style", "visibility: hidden");
-  alert("button 2!"); 
-});
 
 /*----- functions -----*/
-function buyProperty(player, property) {
-  emptyP.textContent = `${player.name} would you like to buy ${property}?`;
-  emptyDiv.setAttribute("style", "visibility: visible");
+function landedOn(player, propertyObj) {
+  if (propertyObj.name == "GO") {
+    player.money(200);
+    return;
+  }
+  if (propertyObj.bought) {
+    player.money(-propertyObj.rent);
+    propertyObj.owner.money(propertyObj.rent);
+  } else {
+    emptyP.textContent = `${player.name} would you like to buy ${propertyObj.name}?`;
+    emptyDiv.setAttribute("style", "visibility: visible");
+    emptyBtn1.addEventListener("click", function() { 
+      emptyDiv.setAttribute("style", "visibility: hidden");
+      if(player.money() > propertyObj.cost){
+        propertyObj.bought = true;
+        propertyObj.owner = player;
+        player.money(-propertyObj.cost);
+      }
+    });
+    emptyBtn2.addEventListener("click", function() { 
+      emptyDiv.setAttribute("style", "visibility: hidden");
+    });
+  }
 }
