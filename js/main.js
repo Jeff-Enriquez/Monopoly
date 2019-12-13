@@ -29,7 +29,6 @@ let objSquares = [
     bought: false,
     owner: undefined,
     cost: 200,
-    rent: 25,
   },
   {
     name: "Oriental Ave",
@@ -48,6 +47,177 @@ let objSquares = [
     cost: 100,
     rent: 6,
   },
+  {
+    name: "Connecticut Ave",
+    bought: false,
+    owner: undefined,
+    cost: 120,
+    rent: 8,
+  },
+  {
+    name: "Jail",
+  },
+  {
+    name: "St Charles Place",
+    bought: false,
+    owner: undefined,
+    cost: 140,
+    rent: 10,
+  },
+  {
+    name: "Electric Company",
+    bought: false,
+    owner: undefined,
+    cost: 150,
+  },
+  {
+    name: "States Ave",
+    bought: false,
+    owner: undefined,
+    cost: 140,
+    rent: 10,
+  },
+  {
+    name: "Virginia Ave",
+    bought: false,
+    owner: undefined,
+    cost: 160,
+    rent: 12,
+  },
+  {
+    name: "Pennsylvania Railroad",
+    bought: false,
+    owner: undefined,
+    cost: 200,
+  },
+  {
+    name: "St James Place",
+    bought: false,
+    owner: undefined,
+    cost: 180,
+    rent: 14,
+  },
+  {
+    name: "Community Chest",
+  },
+  {
+    name: "Tennesse Ave",
+    bought: false,
+    owner: undefined,
+    cost: 180,
+    rent: 14,
+  },
+  {
+    name: "New York Ave",
+    bought: false,
+    owner: undefined,
+    cost: 200,
+    rent: 16,
+  },
+  {
+    name: "Free Parking",
+  },
+  {
+    name: "Kentucky Ave",
+    bought: false,
+    owner: undefined,
+    cost: 220,
+    rent: 18,
+  },
+  {
+    name: "Chance",
+  },
+  {
+    name: "Indiana Ave",
+    bought: false,
+    owner: undefined,
+    cost: 220,
+    rent: 18,
+  },
+  {
+    name: "Illinois Ave",
+    bought: false,
+    owner: undefined,
+    cost: 240,
+    rent: 20,
+  },
+  {
+    name: "B. & O. Railroad",
+    bought: false,
+    owner: undefined,
+    cost: 200,
+  },
+  {
+    name: "Atlantic Ave",
+    bought: false,
+    owner: undefined,
+    cost: 260,
+    rent: 22,
+  },
+  {
+    name: "Ventnor Ave",
+    bought: false,
+    owner: undefined,
+    cost: 260,
+    rent: 22,
+  },
+  {
+    name: "Water Works",
+    bought: false,
+    owner: undefined,
+    cost: 150,
+  },
+  {
+    name: "Marvin Gardens",
+    bought: false,
+    owner: undefined,
+    cost: 280,
+    rent: 24,
+  },
+  {
+    name: "Go to Jail",
+  },
+  {
+    name: "Pacific Ave",
+    bought: false,
+    owner: undefined,
+    cost: 300,
+    rent: 26,
+  },
+  {
+    name: "No. Carolina Ave",
+    bought: false,
+    owner: undefined,
+    cost: 300,
+    rent: 26,
+  },
+  {
+    name: "Community Chest",
+  },
+  {
+    name: "Pennsylvania Ave",
+    bought: false,
+    owner: undefined,
+    cost: 320,
+    rent: 28,
+  },
+  {
+    name: "Short Line Railroad",
+    bought: false,
+    owner: undefined,
+    cost: 200,
+  },
+  {
+    name: "Chance",
+  },
+  {
+    name: "Park Place",
+    bought: false,
+    owner: undefined,
+    cost: 350,
+    rent: 35,
+  },
+  
 ]
 /* ------- boardSquares is the game sqaces --------- */
 const board = []
@@ -113,7 +283,10 @@ class Player {
   movePlayer(roll) {
     boardSquares[this.location].removeChild(this.playerIcon);
     this.location += roll;
-    if(this.location > 39) this.location -= 40;
+    if(this.location > 39) {
+      this.location -= 40;
+      this.money(200);
+    }
     if (this.location > 29) {
       this.playerIcon.style.margin = "2px";
       this.playerIcon.style.marginLeft = "40px";
@@ -132,6 +305,7 @@ class Player {
     let roll = Math.ceil(Math.random()*6) + Math.ceil(Math.random()*6);
     this.movePlayer(roll);
     currentPlayer = this.name;
+    landedOn(this, objSquares[this.location]);
     return roll;
   }
 }
@@ -154,9 +328,16 @@ const emptyBtn2 = document.querySelector("#btn2");
 
 /*----- functions -----*/
 function landedOn(player, propertyObj) {
-  if (propertyObj.name == "GO") {
+  let n = propertyObj.name;
+  if (n == "GO") {
     player.money(200);
     return;
+  }
+  if (n == "Chance" || n == "Community Chest" || n.includes("Railroad") ||
+  n.includes("Jail") || n == "Electric Company" || n == "Water Works" ||
+  n == "Free Parking" || n == "Income Tax"
+  ) {
+    return
   }
   if (propertyObj.bought) {
     player.money(-propertyObj.rent);
