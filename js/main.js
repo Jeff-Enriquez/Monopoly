@@ -1,5 +1,22 @@
+/* ------- test function -------- */
+// $( function() {
+//   $( "#accordion" ).accordion();
+// } );
 
-/* -------- objSquares is the value and properties of each square space ---------- */
+/*----- constants -----*/
+const board = [];
+board.push(document.querySelectorAll("#bottom-row > div"));
+board.push(document.querySelectorAll("#left-column > div"));
+board.push(document.querySelectorAll("#top-row > div"));
+board.push(document.querySelectorAll("#right-column > div"));
+const boardSquares = [];
+board.forEach(function(node) {
+  node.forEach(function(obj) {
+    boardSquares.push(obj);
+  })
+})
+let player1, player2;
+/*----- app's state (variables) -----*/
 let objSquares = [
   { //Go
     name: "GO",
@@ -219,68 +236,90 @@ let objSquares = [
   },
   
 ]
-/* ------- boardSquares is the game sqaces --------- */
-const board = []
-board.push(document.querySelectorAll("#bottom-row > div"));
-board.push(document.querySelectorAll("#left-column > div"));
-board.push(document.querySelectorAll("#top-row > div"));
-board.push(document.querySelectorAll("#right-column > div"));
-const boardSquares = [];
-board.forEach(function(node) {
-  node.forEach(function(obj) {
-    boardSquares.push(obj);
-  })
+let currentPlayer;
+/*----- cached element references -----*/
+const emptyDiv = document.querySelector("#empty div");
+const emptyP = document.querySelector("#empty-p");
+const emptyBtn1 = document.querySelector("#btn1");
+const emptyBtn2 = document.querySelector("#btn2");
+const rollDiceBtn = document.querySelector("#roll-dice");
+const accordion = document.querySelector("#accordion");
+/*----- event listeners -----*/
+rollDiceBtn.addEventListener("click", function () {
+
 })
 
-/* ------- test function -------- */
-$( function() {
-  $( "#accordion" ).accordion();
-} );
-/* ------- player color --------- */
-let accordion = document.querySelector("#accordion");
-const playerColors = ["red", "purple", "green", "blue"];
-let colorIdx = 0;
-/* -------- Player class -------- */
-class Player {
-  constructor(name) {
-    this.name = name;
-    this._money = 1500;
-    this.location = 0;
-    this.createPlayerIcon();
-    this.createPlayerDisplay();
+/*----- functions -----*/
+function landedOn(player, propertyObj) {
+  let n = propertyObj.name;
+  if (n == "GO" || n == "Chance" || n == "Community Chest" || n.includes("Railroad") ||
+  n.includes("Jail") || n == "Electric Company" || n == "Water Works" ||
+  n == "Free Parking" || n == "Income Tax"
+  ) {
+    return
   }
-  createPlayerDisplay() {
-    this.playerDisplay = document.createElement("p");
-    this.playerDisplay.textContent = `Money: ${this._money}`;
-    let h3 = document.createElement("h3");
-    h3.textContent = this.name;
-    let div = document.createElement("div");
-    div.setAttribute("id", this.name);
-    accordion.appendChild(h3);
-    accordion.appendChild(div);
-    document.querySelector(`#${this.name}`).appendChild(this.playerDisplay);  
+  if (propertyObj.bought) {
+    player.money(-propertyObj.rent);
+    propertyObj.owner.money(propertyObj.rent);
+  } else {
+    rollDiceBtn.disabled = true;
+    emptyP.textContent = `${player.name} would you like to buy ${propertyObj.name}?`;
+    emptyDiv.setAttribute("style", "visibility: visible");
+    emptyBtn1.addEventListener("click", function() { 
+      emptyDiv.setAttribute("style", "visibility: hidden");
+      if(player.money() > propertyObj.cost){
+        propertyObj.bought = true;
+        propertyObj.owner = player;
+        player.money(-propertyObj.cost);
+      }
+      rollDiceBtn.disabled = false;
+    });
+    emptyBtn2.addEventListener("click", function() { 
+      emptyDiv.setAttribute("style", "visibility: hidden");
+      rollDiceBtn.disabled = false;
+    });
   }
-  createPlayerIcon() {
-    this.playerIcon = document.createElement("div");
-    this.playerIcon.style.width = "10px";
-    this.playerIcon.style.height = "10px";
-    this.playerIcon.style.cssFloat = "left";
-    this.playerIcon.style.margin = "2px";
-    this.playerIcon.style.backgroundColor = playerColors[colorIdx];
-    boardSquares[this.location].appendChild(this.playerIcon);
-    colorIdx ++;
-  }
-  money(value = 0) {
-    if(value == 0) {
-      return this._money;
-    } else if(this._money + value < 0) {
-      return undefined;
-    }
-    this._money += value;
-    this.playerDisplay.textContent = `Money: ${this._money}`;
-  }
-  movePlayer(roll) {
-    boardSquares[this.location].removeChild(this.playerIcon);
+}
+function init() {
+  player1 = new Player("Jeff", "blue");
+  player2 = new Player("Zane", "red");
+  currentPlayer = player1;
+  renderInitialPlayerIcon(player1);
+  renderInitialPlayerIcon(player2);
+}
+function render() {
+  player1H3.textContent = player1.name;
+  accordion.appendChild(player1H3);
+  player1Div.setAttribute("id", player1.name);
+  accordion.appendChild(player1Div);
+  player1P.textContent = `Money: ${player1._money}`;
+  document.querySelector(`#${player1.name}`).appendChild(player1P);
+  player2H3.textContent = player2.name;
+  accordion.appendChild(player2H3);
+  player2Div.setAttribute("id", player2.name);
+  accordion.appendChild(player2Div);
+  player2P.textContent = `Money: ${player2._money}`;
+  document.querySelector(`#${player2.name}`).appendChild(player2P);
+  renderPlayerIcon(player1);
+}
+
+function renderInitialPlayerIcon(player) {
+  let playerIcon = document.createElement("div");
+  playerIcon.style.width = "10px";
+  playerIcon.style.height = "10px";
+  playerIcon.style.cssFloat = "left";
+  playerIcon.style.margin = "2px";
+  playerIcon.style.backgroundColor = player.color;
+  boardSquares[0].appendChild(playerIcon);
+}
+function renderPlayerIcon(player) {
+  playerIcon = document.createElement("div");
+  playerIcon.style.width = "10px";
+  playerIcon.style.height = "10px";
+  playerIcon.style.cssFloat = "left";
+  playerIcon.style.margin = "2px";
+  playerIcon.style.backgroundColor = player.color;
+  boardSquares[this.location].removeChild(this.playerIcon);
     this.location += roll;
     if(this.location > 39) {
       this.location -= 40;
@@ -299,71 +338,25 @@ class Player {
       this.playerIcon.style.marginTop = "40px";
     } 
     boardSquares[this.location].appendChild(this.playerIcon);
+}
+class Player {
+  constructor(name, color) {
+    this.name = name;
+    this.color = color;
+    this._money = 1500;
+    this.location = 0;
+    this.prevLocation = 0;
+  }
+  money(value = 0) {
+    if(value == 0) {
+      return this._money;
+    } else if(this._money + value < 0) {
+      return undefined;
+    }
+    this._money += value;
   }
   rollDice() {
     let roll = Math.ceil(Math.random()*6) + Math.ceil(Math.random()*6);
-    this.movePlayer(roll);
-    landedOn(this, objSquares[this.location]);
-    return roll;
   }
 }
-
-let player1 = new Player("Jeff");
-let player2 = new Player("Zane");
-let player3 = new Player("Sophia");
-const players = [player1, player2, player3];
-let playerIdx = 0;
-
-
-/*----- constants -----*/
-const emptyDiv = document.querySelector("#empty div");
-const emptyP = document.querySelector("#empty-p");
-const emptyBtn1 = document.querySelector("#btn1");
-const emptyBtn2 = document.querySelector("#btn2");
-const rollDiceBtn = document.querySelector("#roll-dice");
-rollDiceBtn.addEventListener("click", function () {
-  players[playerIdx].rollDice();
-  if(playerIdx >= players.length-1) {
-    playerIdx = 0 
-  } else {
-    playerIdx++;
-  }
-})
-/*----- app's state (variables) -----*/
-
-/*----- cached element references -----*/
-
-/*----- event listeners -----*/
-
-/*----- functions -----*/
-function landedOn(player, propertyObj) {
-  let n = propertyObj.name;
-  if (n == "GO") {
-    player.money(200);
-    return;
-  }
-  if (n == "Chance" || n == "Community Chest" || n.includes("Railroad") ||
-  n.includes("Jail") || n == "Electric Company" || n == "Water Works" ||
-  n == "Free Parking" || n == "Income Tax"
-  ) {
-    return
-  }
-  if (propertyObj.bought) {
-    player.money(-propertyObj.rent);
-    propertyObj.owner.money(propertyObj.rent);
-  } else {
-    emptyP.textContent = `${player.name} would you like to buy ${propertyObj.name}?`;
-    emptyDiv.setAttribute("style", "visibility: visible");
-    emptyBtn1.addEventListener("click", function() { 
-      emptyDiv.setAttribute("style", "visibility: hidden");
-      if(player.money() > propertyObj.cost){
-        propertyObj.bought = true;
-        propertyObj.owner = player;
-        player.money(-propertyObj.cost);
-      }
-    });
-    emptyBtn2.addEventListener("click", function() { 
-      emptyDiv.setAttribute("style", "visibility: hidden");
-    });
-  }
-}
+init();
