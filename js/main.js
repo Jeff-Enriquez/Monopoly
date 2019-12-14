@@ -15,7 +15,7 @@ board.forEach(function(node) {
     boardSquares.push(obj);
   })
 })
-let player1, player2;
+const allPlayers = [];
 /*----- app's state (variables) -----*/
 let objSquares = [
   { //Go
@@ -236,7 +236,7 @@ let objSquares = [
   },
   
 ]
-let currentPlayer;
+let player1, player2, currentPlayer;
 /*----- cached element references -----*/
 const emptyDiv = document.querySelector("#empty div");
 const emptyP = document.querySelector("#empty-p");
@@ -246,8 +246,13 @@ const rollDiceBtn = document.querySelector("#roll-dice");
 const accordion = document.querySelector("#accordion");
 /*----- event listeners -----*/
 rollDiceBtn.addEventListener("click", function () {
-  currentPlayer.rollDice();
-  renderPlayerIcon(currentPlayer);
+  allPlayers[currentPlayer].rollDice();
+  renderPlayerIcon(allPlayers[currentPlayer]);
+  if(currentPlayer == allPlayers.length - 1){
+    currentPlayer = 0;
+  } else {
+    currentPlayer++;
+  }
 })
 
 /*----- functions -----*/
@@ -284,7 +289,8 @@ function landedOn(player, propertyObj) {
 function init() {
   player1 = new Player("Jeff", "blue");
   player2 = new Player("Zane", "red");
-  currentPlayer = player1;
+  allPlayers.push(player1, player2);
+  currentPlayer = 0;
   render();
 }
 function render() {
@@ -317,7 +323,7 @@ function renderInitialPlayerIcon(player) {
 function renderPlayerIcon(player) {
   let prevIcon = document.querySelector(`#${player.name}`);
   boardSquares[player.prevLocation].removeChild(prevIcon);
-  playerIcon = document.createElement("div");
+  let playerIcon = document.createElement("div");
   playerIcon.id = `${player.name}`;
   playerIcon.style.width = "10px";
   playerIcon.style.height = "10px";
@@ -327,6 +333,7 @@ function renderPlayerIcon(player) {
   if (player.location > 29) {
     playerIcon.style.marginLeft = "40px";
   } else if (player.location > 19) {
+
   } else if (player.location > 9) {
     playerIcon.style.marginLeft = "2px";
   } else {
