@@ -245,8 +245,8 @@ let objSquares = [
     rent: 50,
   },
 ]
-let player1, player2, currentPlayer;
-let lastLandedOn;
+let player1, player2, currentPlayer, allPlayersIdx, 
+lastLandedOn;
 /*----- cached element references -----*/
 const emptyDiv = document.querySelector("#empty div");
 const emptyP = document.querySelector("#empty-p");
@@ -258,60 +258,57 @@ const moneyPArray = document.querySelectorAll(".money");
 const namesH3Array = document.querySelectorAll("h3");
 /*----- event listeners -----*/
 rollDiceBtn.addEventListener("click", function () {
-  let player = allPlayers[currentPlayer];
-  player.rollDice();
-  renderPlayerIcon(player);
-  // landedOne(player, objSquares[player.location]);
-  if(currentPlayer == allPlayers.length - 1){
-    currentPlayer = 0;
-  } else {
-    currentPlayer++;
+  currentPlayer.rollDice();
+  lastLandedOn = objSquares[currentPlayer.location];
+  renderPlayerIcon();
+  landedOn();
+  render();
+});
+emptyBtn1.addEventListener("click", function() { 
+  emptyDiv.setAttribute("style", "visibility: hidden");
+  if(currentPlayer.money() > lastLandedOn.cost){
+    lastLandedOn.bought = true;
+    lastLandedOn.owner = currentPlayer.name;
+    currentPlayer.money(-lastLandedOn.cost);
   }
-})
-
+  rollDiceBtn.disabled = false;
+  render();
+  nextPlayer();
+});
+emptyBtn2.addEventListener("click", function() { 
+  emptyDiv.setAttribute("style", "visibility: hidden");
+  rollDiceBtn.disabled = false;
+  render();
+  nextPlayer();
+});
 /*----- functions -----*/
-function landedOn(player, propertyObj) {
-  let n = propertyObj.name;
+function landedOn() {
+  let n = lastLandedOn.name;
   if (n == "GO" || n == "Chance" || n == "Community Chest" || n.includes("Railroad") ||
   n.includes("Jail") || n == "Electric Company" || n == "Water Works" ||
   n == "Free Parking" || n.includes("Tax")
   ) {
-    return
-  }
-  if (propertyObj.bought) {
-    player.money(-propertyObj.rent);
-    propertyObj.owner.money(propertyObj.rent);
+  } else if (lastLandedOn.bought) {
+    currentPlayer.money(-lastLandedOn.rent);
+    lastLandedOn.owner.money(lastLandedOn.rent);
   } else {
-    // render buy property mesage
-    rollDiceBtn.disabled = true;
-    emptyP.textContent = `${player.name} would you like to buy ${propertyObj.name}?`;
-    emptyDiv.setAttribute("style", "visibility: visible");
-    emptyBtn1.addEventListener("click", function() { 
-      emptyDiv.setAttribute("style", "visibility: hidden");
-      if(player.money() > propertyObj.cost){
-        propertyObj.bought = true;
-        propertyObj.owner = player;
-        player.money(-propertyObj.cost);
-      }
-      rollDiceBtn.disabled = false;
-    });
-    emptyBtn2.addEventListener("click", function() { 
-      emptyDiv.setAttribute("style", "visibility: hidden");
-      rollDiceBtn.disabled = false;
-    });
+    renderBuyProperty();
+    return;
   }
+  nextPlayer();
 }
 function init() {
   player1 = new Player("Jeff", "blue");
   player2 = new Player("Zane", "red");
   allPlayers.push(player1, player2);
-  currentPlayer = 0;
+  allPlayersIdx = 0;
+  currentPlayer = allPlayers[allPlayersIdx];
   lastLandedOn = objSquares[0];
+  renderInitialPlayerIcon(player1);
+  renderInitialPlayerIcon(player2);
   render();
 }
 function render() {
-  renderInitialPlayerIcon(player1);
-  renderInitialPlayerIcon(player2);
   moneyPArray[0].textContent = `Money: ${player1.money()}`;
   moneyPArray[1].textContent = `Money: ${player2.money()}`;
   namesH3Array[0].textContent = `${player1.name}`;
@@ -340,26 +337,39 @@ function renderInitialPlayerIcon(player) {
   playerIcon.style.backgroundColor = player.color;
   boardSquares[0].appendChild(playerIcon);
 }
-function renderPlayerIcon(player) {
-  let prevIcon = document.querySelector(`#${player.name}`);
-  boardSquares[player.prevLocation].removeChild(prevIcon);
+function renderPlayerIcon() {
+  let prevIcon = document.querySelector(`#${currentPlayer.name}`);
+  boardSquares[currentPlayer.prevLocation].removeChild(prevIcon);
   let playerIcon = document.createElement("div");
-  playerIcon.id = `${player.name}`;
+  playerIcon.id = `${currentPlayer.name}`;
   playerIcon.style.width = "10px";
   playerIcon.style.height = "10px";
   playerIcon.style.cssFloat = "left";
   playerIcon.style.margin = "2px";
-  playerIcon.style.backgroundColor = player.color;
-  if (player.location > 29) {
+  playerIcon.style.backgroundColor = currentPlayer.color;
+  if (currentPlayer.location > 29) {
     playerIcon.style.marginLeft = "40px";
-  } else if (player.location > 19) {
+  } else if (currentPlayer.location > 19) {
 
-  } else if (player.location > 9) {
+  } else if (currentPlayer.location > 9) {
     playerIcon.style.marginLeft = "2px";
   } else {
     playerIcon.style.marginTop = "40px";
   }
-  boardSquares[player.location].appendChild(playerIcon);
+  boardSquares[currentPlayer.location].appendChild(playerIcon);
+}
+function renderBuyProperty() {
+  rollDiceBtn.disabled = true;
+  emptyP.textContent = `${currentPlayer.name} would you like to buy ${lastLandedOn.name}?`;
+  emptyDiv.setAttribute("style", "visibility: visible");
+}
+function nextPlayer() {
+  if(allPlayersIdx == allPlayers.length - 1){
+    allPlayersIdx = 0;
+  } else {
+    allPlayersIdx++;
+  }
+  currentPlayer = allPlayers[allPlayersIdx];
 }
 class Player {
   constructor(name, color) {
