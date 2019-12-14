@@ -234,9 +234,19 @@ let objSquares = [
     cost: 350,
     rent: 35,
   },
-  
+  {
+    name: "Luxury Tax",
+  },
+  {
+    name: "Boardwalk",
+    bought: false,
+    owner: undefined,
+    cost: 400,
+    rent: 50,
+  },
 ]
 let player1, player2, currentPlayer;
+let lastLandedOn;
 /*----- cached element references -----*/
 const emptyDiv = document.querySelector("#empty div");
 const emptyP = document.querySelector("#empty-p");
@@ -244,10 +254,14 @@ const emptyBtn1 = document.querySelector("#btn1");
 const emptyBtn2 = document.querySelector("#btn2");
 const rollDiceBtn = document.querySelector("#roll-dice");
 const accordion = document.querySelector("#accordion");
+const moneyPArray = document.querySelectorAll(".money");
+const namesH3Array = document.querySelectorAll("h3");
 /*----- event listeners -----*/
 rollDiceBtn.addEventListener("click", function () {
-  allPlayers[currentPlayer].rollDice();
-  renderPlayerIcon(allPlayers[currentPlayer]);
+  let player = allPlayers[currentPlayer];
+  player.rollDice();
+  renderPlayerIcon(player);
+  // landedOne(player, objSquares[player.location]);
   if(currentPlayer == allPlayers.length - 1){
     currentPlayer = 0;
   } else {
@@ -260,7 +274,7 @@ function landedOn(player, propertyObj) {
   let n = propertyObj.name;
   if (n == "GO" || n == "Chance" || n == "Community Chest" || n.includes("Railroad") ||
   n.includes("Jail") || n == "Electric Company" || n == "Water Works" ||
-  n == "Free Parking" || n == "Income Tax"
+  n == "Free Parking" || n.includes("Tax")
   ) {
     return
   }
@@ -268,6 +282,7 @@ function landedOn(player, propertyObj) {
     player.money(-propertyObj.rent);
     propertyObj.owner.money(propertyObj.rent);
   } else {
+    // render buy property mesage
     rollDiceBtn.disabled = true;
     emptyP.textContent = `${player.name} would you like to buy ${propertyObj.name}?`;
     emptyDiv.setAttribute("style", "visibility: visible");
@@ -291,11 +306,16 @@ function init() {
   player2 = new Player("Zane", "red");
   allPlayers.push(player1, player2);
   currentPlayer = 0;
+  lastLandedOn = objSquares[0];
   render();
 }
 function render() {
   renderInitialPlayerIcon(player1);
   renderInitialPlayerIcon(player2);
+  moneyPArray[0].textContent = `Money: ${player1.money()}`;
+  moneyPArray[1].textContent = `Money: ${player2.money()}`;
+  namesH3Array[0].textContent = `${player1.name}`;
+  namesH3Array[1].textContent = `${player2.name}`;
   // player1H3.textContent = player1.name;
   // accordion.appendChild(player1H3);
   // player1Div.setAttribute("id", player1.name);
