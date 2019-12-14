@@ -246,7 +246,8 @@ const rollDiceBtn = document.querySelector("#roll-dice");
 const accordion = document.querySelector("#accordion");
 /*----- event listeners -----*/
 rollDiceBtn.addEventListener("click", function () {
-
+  currentPlayer.rollDice();
+  renderPlayerIcon(currentPlayer);
 })
 
 /*----- functions -----*/
@@ -284,27 +285,28 @@ function init() {
   player1 = new Player("Jeff", "blue");
   player2 = new Player("Zane", "red");
   currentPlayer = player1;
-  renderInitialPlayerIcon(player1);
-  renderInitialPlayerIcon(player2);
+  render();
 }
 function render() {
-  player1H3.textContent = player1.name;
-  accordion.appendChild(player1H3);
-  player1Div.setAttribute("id", player1.name);
-  accordion.appendChild(player1Div);
-  player1P.textContent = `Money: ${player1._money}`;
-  document.querySelector(`#${player1.name}`).appendChild(player1P);
-  player2H3.textContent = player2.name;
-  accordion.appendChild(player2H3);
-  player2Div.setAttribute("id", player2.name);
-  accordion.appendChild(player2Div);
-  player2P.textContent = `Money: ${player2._money}`;
-  document.querySelector(`#${player2.name}`).appendChild(player2P);
-  renderPlayerIcon(player1);
+  renderInitialPlayerIcon(player1);
+  renderInitialPlayerIcon(player2);
+  // player1H3.textContent = player1.name;
+  // accordion.appendChild(player1H3);
+  // player1Div.setAttribute("id", player1.name);
+  // accordion.appendChild(player1Div);
+  // player1P.textContent = `Money: ${player1._money}`;
+  // document.querySelector(`#${player1.name}`).appendChild(player1P);
+  // player2H3.textContent = player2.name;
+  // accordion.appendChild(player2H3);
+  // player2Div.setAttribute("id", player2.name);
+  // accordion.appendChild(player2Div);
+  // player2P.textContent = `Money: ${player2._money}`;
+  // document.querySelector(`#${player2.name}`).appendChild(player2P);
+  // renderPlayerIcon(player1);
 }
-
 function renderInitialPlayerIcon(player) {
   let playerIcon = document.createElement("div");
+  playerIcon.id = `${player.name}`;
   playerIcon.style.width = "10px";
   playerIcon.style.height = "10px";
   playerIcon.style.cssFloat = "left";
@@ -313,31 +315,24 @@ function renderInitialPlayerIcon(player) {
   boardSquares[0].appendChild(playerIcon);
 }
 function renderPlayerIcon(player) {
+  let prevIcon = document.querySelector(`#${player.name}`);
+  boardSquares[player.prevLocation].removeChild(prevIcon);
   playerIcon = document.createElement("div");
+  playerIcon.id = `${player.name}`;
   playerIcon.style.width = "10px";
   playerIcon.style.height = "10px";
   playerIcon.style.cssFloat = "left";
   playerIcon.style.margin = "2px";
   playerIcon.style.backgroundColor = player.color;
-  boardSquares[this.location].removeChild(this.playerIcon);
-    this.location += roll;
-    if(this.location > 39) {
-      this.location -= 40;
-      this.money(200);
-    }
-    if (this.location > 29) {
-      this.playerIcon.style.margin = "2px";
-      this.playerIcon.style.marginLeft = "40px";
-    } else if (this.location > 19) {
-      this.playerIcon.style.margin = "2px";
-    } else if (this.location > 9) {
-      this.playerIcon.style.margin = "2px";
-      this.playerIcon.style.marginLeft = "2px";
-    } else {
-      this.playerIcon.style.margin = "2px";
-      this.playerIcon.style.marginTop = "40px";
-    } 
-    boardSquares[this.location].appendChild(this.playerIcon);
+  if (player.location > 29) {
+    playerIcon.style.marginLeft = "40px";
+  } else if (player.location > 19) {
+  } else if (player.location > 9) {
+    playerIcon.style.marginLeft = "2px";
+  } else {
+    playerIcon.style.marginTop = "40px";
+  }
+  boardSquares[player.location].appendChild(playerIcon);
 }
 class Player {
   constructor(name, color) {
@@ -357,6 +352,12 @@ class Player {
   }
   rollDice() {
     let roll = Math.ceil(Math.random()*6) + Math.ceil(Math.random()*6);
+    this.prevLocation = this.location;
+    this.location += roll;
+    if(this.location > 39) {
+      this.location -= 40;
+      this.money(200);
+    }
   }
 }
 init();
