@@ -60,7 +60,7 @@ emptyBtn2.addEventListener("click", function() {
 /*----- functions -----*/
 function landedOn() {
   let n = lastLandedOn.name;
-  if (n == "GO" || n == "Chance" || n == "Community Chest" || n.includes("Railroad") ||
+  if (n == "GO" || n == "Chance" || n == "Community Chest" ||
   n.includes("Jail") || n == "Electric Company" || n == "Water Works" ||
   n == "Free Parking" || n.includes("Tax")
   ) {
@@ -109,6 +109,7 @@ function init() {
       bought: false,
       owner: undefined,
       cost: 200,
+      color: "black",
     },
     {
       name: "Oriental Ave",
@@ -175,6 +176,7 @@ function init() {
       bought: false,
       owner: undefined,
       cost: 200,
+      color: "black",
     },
     {
       name: "St James Place",
@@ -238,6 +240,7 @@ function init() {
       bought: false,
       owner: undefined,
       cost: 200,
+      color: "black",
     },
     {
       name: "Atlantic Ave",
@@ -304,6 +307,7 @@ function init() {
       bought: false,
       owner: undefined,
       cost: 200,
+      color: "black"
     },
     {
       name: "Chance",
@@ -413,6 +417,9 @@ function rollDice(player){
 function getRent(){
   let propertyColorSet = objSquares.filter(obj => obj.color === lastLandedOn.color);
   let ownerSet = propertyColorSet.filter(obj => obj.owner === lastLandedOn.owner);
+  if(ownerSet[0].color === "black") {
+    return ownerSet.length * 25;
+  }
   if(ownerSet[0].name === "Mediterranean Ave" && ownerSet[1].name === "Baltic Ave"){
     return lastLandedOn.rent * 2;
   } else if (ownerSet.length == 3) {
