@@ -316,23 +316,13 @@ function init() {
 function render() {
   moneyPArray[0].textContent = `Money: ${player1.getMoney()}`;
   moneyPArray[1].textContent = `Money: ${player2.getMoney()}`;
-  namesH3Array[0].textContent = `${player1.name}`;
-  namesH3Array[1].textContent = `${player2.name}`;
-  // player1H3.textContent = player1.name;
-  // accordion.appendChild(player1H3);
-  // player1Div.setAttribute("id", player1.name);
-  // accordion.appendChild(player1Div);
-  // player1P.textContent = `Money: ${player1._money}`;
-  // document.querySelector(`#${player1.name}`).appendChild(player1P);
-  // player2H3.textContent = player2.name;
-  // accordion.appendChild(player2H3);
-  // player2Div.setAttribute("id", player2.name);
-  // accordion.appendChild(player2Div);
-  // player2P.textContent = `Money: ${player2._money}`;
-  // document.querySelector(`#${player2.name}`).appendChild(player2P);
-  // renderPlayerIcon(player1);
+  moneyPArray[0].innerHTML += `<br>Properties: ${getPlayerProperties(player1)}`;
+  moneyPArray[1].innerHTML += `<br>Properties: ${getPlayerProperties(player2)}`;
 }
 function renderInitialPlayerIcon(player) {
+  namesH3Array[0].textContent = `${player1.name}`;
+  namesH3Array[1].textContent = `${player2.name}`;
+
   let playerIcon = document.createElement("div");
   playerIcon.id = `${player.name}`;
   playerIcon.style.width = "10px";
@@ -379,6 +369,12 @@ function nextPlayer() {
     allPlayersIdx++;
   }
   currentPlayer = allPlayers[allPlayersIdx];
+}
+function getPlayerProperties(player) {
+  let allBoughtProperties = objSquares.filter(obj => obj.owner !== undefined);
+  let playerProperties = allBoughtProperties.filter(obj => obj.owner.name == player.name);
+  playerProperties = playerProperties.map(obj => obj.name);
+  return playerProperties.join(", ");
 }
 function rollDice(player){
   let roll = Math.ceil(Math.random()*6) + Math.ceil(Math.random()*6);
