@@ -268,7 +268,7 @@ emptyBtn1.addEventListener("click", function() {
   emptyDiv.setAttribute("style", "visibility: hidden");
   if(currentPlayer.money() > lastLandedOn.cost){
     lastLandedOn.bought = true;
-    lastLandedOn.owner = currentPlayer.name;
+    lastLandedOn.owner = currentPlayer;
     currentPlayer.money(-lastLandedOn.cost);
   }
   rollDiceBtn.disabled = false;
