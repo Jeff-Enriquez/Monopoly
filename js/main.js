@@ -1,4 +1,4 @@
-/* ------- test function -------- */
+  /* ------- test function -------- */
 // $( function() {
 //   $( "#accordion" ).accordion();
 // } );
@@ -259,7 +259,7 @@ const namesH3Array = document.querySelectorAll("h3");
 const gameHistory = document.querySelector("#game-history");
 /*----- event listeners -----*/
 rollDiceBtn.addEventListener("click", function () {
-  currentPlayer.rollDice();
+  rollDice(currentPlayer);
   renderGameHistory(`${currentPlayer.name}: rolled ${lastRoll}`);
   lastLandedOn = objSquares[currentPlayer.location];
   renderPlayerIcon();
@@ -268,10 +268,10 @@ rollDiceBtn.addEventListener("click", function () {
 });
 emptyBtn1.addEventListener("click", function() { 
   emptyDiv.setAttribute("style", "visibility: hidden");
-  if(currentPlayer.money() > lastLandedOn.cost){
+  if(currentPlayer.getMoney() > lastLandedOn.cost){
     lastLandedOn.bought = true;
     lastLandedOn.owner = currentPlayer;
-    currentPlayer.money(-lastLandedOn.cost);
+    currentPlayer.setMoney(-lastLandedOn.cost);
     renderGameHistory(`${currentPlayer.name}: paid ${lastLandedOn.cost} for ${lastLandedOn.name}`);
   }
   rollDiceBtn.disabled = false;
@@ -292,8 +292,8 @@ function landedOn() {
   n == "Free Parking" || n.includes("Tax")
   ) {
   } else if (lastLandedOn.bought) {
-    currentPlayer.money(-lastLandedOn.rent);
-    lastLandedOn.owner.money(lastLandedOn.rent);
+    currentPlayer.setMoney(-lastLandedOn.rent);
+    lastLandedOn.owner.setMoney(lastLandedOn.rent);
     renderGameHistory(`${currentPlayer.name}: paid ${lastLandedOn.rent} to ${lastLandedOn.owner.name}`);
   } else {
     renderBuyProperty();
@@ -314,8 +314,8 @@ function init() {
   render();
 }
 function render() {
-  moneyPArray[0].textContent = `Money: ${player1.money()}`;
-  moneyPArray[1].textContent = `Money: ${player2.money()}`;
+  moneyPArray[0].textContent = `Money: ${player1.getMoney()}`;
+  moneyPArray[1].textContent = `Money: ${player2.getMoney()}`;
   namesH3Array[0].textContent = `${player1.name}`;
   namesH3Array[1].textContent = `${player2.name}`;
   // player1H3.textContent = player1.name;
@@ -380,6 +380,16 @@ function nextPlayer() {
   }
   currentPlayer = allPlayers[allPlayersIdx];
 }
+function rollDice(player){
+  let roll = Math.ceil(Math.random()*6) + Math.ceil(Math.random()*6);
+  lastRoll = roll;
+  player.prevLocation = player.location;
+  player.location += roll;
+  if(player.location > 39) {
+    player.location -= 40;
+    player.setMoney(200);
+  }
+}
 class Player {
   constructor(name, color) {
     this.name = name;
@@ -388,23 +398,11 @@ class Player {
     this.location = 0;
     this.prevLocation = 0;
   }
-  money(value = 0) {
-    if(value == 0) {
-      return this._money;
-    } else if(this._money + value < 0) {
-      return undefined;
-    }
-    this._money += value;
+  getMoney(){
+    return this._money;
   }
-  rollDice() {
-    let roll = Math.ceil(Math.random()*6) + Math.ceil(Math.random()*6);
-    lastRoll = roll;
-    this.prevLocation = this.location;
-    this.location += roll;
-    if(this.location > 39) {
-      this.location -= 40;
-      this.money(200);
-    }
+  setMoney(value){
+    this._money += value;
   }
 }
 init();
