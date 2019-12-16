@@ -61,7 +61,7 @@ emptyBtn2.addEventListener("click", function() {
 function landedOn() {
   let n = lastLandedOn.name;
   if (n == "GO" || n == "Chance" || n == "Community Chest" ||
-  n.includes("Jail") || n == "Electric Company" || n == "Water Works" ||
+  n.includes("Jail") ||
   n == "Free Parking" || n.includes("Tax")
   ) {
   } else if (lastLandedOn.bought && lastLandedOn.owner != currentPlayer) {
@@ -79,7 +79,7 @@ function init() {
   player1 = new Player("Jeff", "blue");
   player2 = new Player("Zane", "red");
   objSquares = [
-    { //Go
+    {
       name: "GO",
     },
     {
@@ -154,6 +154,7 @@ function init() {
       bought: false,
       owner: undefined,
       cost: 150,
+      color: "utility",
     },
     {
       name: "States Ave",
@@ -263,6 +264,7 @@ function init() {
       bought: false,
       owner: undefined,
       cost: 150,
+      color: "utility",
     },
     {
       name: "Marvin Gardens",
@@ -417,10 +419,14 @@ function rollDice(player){
 function getRent(){
   let propertyColorSet = objSquares.filter(obj => obj.color === lastLandedOn.color);
   let ownerSet = propertyColorSet.filter(obj => obj.owner === lastLandedOn.owner);
-  if(ownerSet[0].color === "black") {
+  if (ownerSet[0].color === "black") {
     return ownerSet.length * 25;
-  }
-  if(ownerSet[0].name === "Mediterranean Ave" && ownerSet[1].name === "Baltic Ave"){
+  } else if (ownerSet[0].color === "utility") {
+    if (ownerSet.length == 1) {
+      return lastRoll * 4;
+    }
+    return lastRoll * 8;
+  } else if (ownerSet[0].name === "Mediterranean Ave" && ownerSet[1].name === "Baltic Ave"){
     return lastLandedOn.rent * 2;
   } else if (ownerSet.length == 3) {
     return lastLandedOn.rent * 2;
