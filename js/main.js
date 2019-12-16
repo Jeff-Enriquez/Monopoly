@@ -246,7 +246,7 @@ let objSquares = [
   },
 ]
 let player1, player2, currentPlayer, allPlayersIdx, 
-lastLandedOn;
+lastLandedOn, lastRoll;
 /*----- cached element references -----*/
 const emptyDiv = document.querySelector("#empty div");
 const emptyP = document.querySelector("#empty-p");
@@ -256,9 +256,11 @@ const rollDiceBtn = document.querySelector("#roll-dice");
 const accordion = document.querySelector("#accordion");
 const moneyPArray = document.querySelectorAll(".money");
 const namesH3Array = document.querySelectorAll("h3");
+const gameHistory = document.querySelector("#game-history");
 /*----- event listeners -----*/
 rollDiceBtn.addEventListener("click", function () {
   currentPlayer.rollDice();
+  renderGameHistory(`${currentPlayer.name}: rolled ${lastRoll}`);
   lastLandedOn = objSquares[currentPlayer.location];
   renderPlayerIcon();
   landedOn();
@@ -270,6 +272,7 @@ emptyBtn1.addEventListener("click", function() {
     lastLandedOn.bought = true;
     lastLandedOn.owner = currentPlayer;
     currentPlayer.money(-lastLandedOn.cost);
+    renderGameHistory(`${currentPlayer.name}: paid ${lastLandedOn.cost} for ${lastLandedOn.name}`);
   }
   rollDiceBtn.disabled = false;
   render();
@@ -291,6 +294,7 @@ function landedOn() {
   } else if (lastLandedOn.bought) {
     currentPlayer.money(-lastLandedOn.rent);
     lastLandedOn.owner.money(lastLandedOn.rent);
+    renderGameHistory(`${currentPlayer.name}: paid ${lastLandedOn.rent} to ${lastLandedOn.owner.name}`);
   } else {
     renderBuyProperty();
     return;
@@ -304,6 +308,7 @@ function init() {
   allPlayersIdx = 0;
   currentPlayer = allPlayers[allPlayersIdx];
   lastLandedOn = objSquares[0];
+  lastRoll = 0;
   renderInitialPlayerIcon(player1);
   renderInitialPlayerIcon(player2);
   render();
@@ -363,6 +368,10 @@ function renderBuyProperty() {
   emptyP.textContent = `${currentPlayer.name} would you like to buy ${lastLandedOn.name}?`;
   emptyDiv.setAttribute("style", "visibility: visible");
 }
+function renderGameHistory(text) {
+  text += "<br>";
+  gameHistory.innerHTML = text.concat(gameHistory.innerHTML);
+}
 function nextPlayer() {
   if(allPlayersIdx == allPlayers.length - 1){
     allPlayersIdx = 0;
@@ -389,6 +398,7 @@ class Player {
   }
   rollDice() {
     let roll = Math.ceil(Math.random()*6) + Math.ceil(Math.random()*6);
+    lastRoll = roll;
     this.prevLocation = this.location;
     this.location += roll;
     if(this.location > 39) {

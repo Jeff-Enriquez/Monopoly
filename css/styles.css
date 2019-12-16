@@ -73,3 +73,16 @@ button {
 #content {
   margin: 5px 20px;
 }
+#game-history-header {
+  margin-top: 10px;
+  color: black;
+  text-decoration: underline;
+}
+#game-history {
+  overflow: auto; 
+  width:300px; 
+  height:150px;
+  margin-bottom: 10px;
+  border: 2px solid black;
+  padding: 4px;
+}
