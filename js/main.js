@@ -20,10 +20,14 @@ const allPlayers = [];
 let player1, player2, currentPlayer, allPlayersIdx, 
 lastLandedOn, lastRoll, objSquares;
 /*----- cached element references -----*/
-const emptyDiv = document.querySelector("#empty div");
-const emptyP = document.querySelector("#empty-p");
+const buyPropertyDiv = document.querySelector("#buy-property-div");
+const buyPropertyP = document.querySelector("#buy-property-p");
+const buyHousesDiv = document.querySelector("#buy-houses-div");
+const buyHousesP = document.querySelector("#buy-houses-p");
 const emptyBtn1 = document.querySelector("#btn1");
 const emptyBtn2 = document.querySelector("#btn2");
+const buyHousesBtn = document.querySelector("#buy-houses-btn");
+const submitHousesBtn = document.querySelector("#btn3");
 const rollDiceBtn = document.querySelector("#roll-dice");
 const accordion = document.querySelector("#accordion");
 const moneyPArray = document.querySelectorAll(".money");
@@ -40,7 +44,7 @@ rollDiceBtn.addEventListener("click", function () {
   render();
 });
 emptyBtn1.addEventListener("click", function() { 
-  emptyDiv.setAttribute("style", "visibility: hidden");
+  buyPropertyDiv.setAttribute("style", "visibility: hidden");
   if(currentPlayer.getMoney() > lastLandedOn.cost){
     lastLandedOn.bought = true;
     lastLandedOn.owner = currentPlayer;
@@ -52,7 +56,7 @@ emptyBtn1.addEventListener("click", function() {
   nextPlayer();
 });
 emptyBtn2.addEventListener("click", function() { 
-  emptyDiv.setAttribute("style", "visibility: hidden");
+  buyPropertyDiv.setAttribute("style", "visibility: hidden");
   rollDiceBtn.disabled = false;
   render();
   nextPlayer();
@@ -342,6 +346,7 @@ function init() {
   currentPlayer = allPlayers[allPlayersIdx];
   lastLandedOn = objSquares[0];
   lastRoll = 0;
+  buyHousesBtn.disabled = true;
   renderInitialPlayerIcon(player1);
   renderInitialPlayerIcon(player2);
   render();
@@ -388,8 +393,8 @@ function renderPlayerIcon() {
 }
 function renderBuyProperty() {
   rollDiceBtn.disabled = true;
-  emptyP.textContent = `${currentPlayer.name} would you like to buy ${lastLandedOn.name}?`;
-  emptyDiv.setAttribute("style", "visibility: visible");
+  buyPropertyP.textContent = `${currentPlayer.name} would you like to buy ${lastLandedOn.name}?`;
+  buyPropertyDiv.setAttribute("style", "visibility: visible");
 }
 function renderGameHistory(text) {
   text += "<br>";
@@ -402,6 +407,30 @@ function nextPlayer() {
     allPlayersIdx++;
   }
   currentPlayer = allPlayers[allPlayersIdx];
+
+  //check if next player can buy houses
+  buyHousesBtn.disabled = true;
+  let currentSets = [];
+  if(objSquares[1].owner == currentPlayer && objSquares[3].owner == currentPlayer){
+    currentSets.push("brown");
+  } else {
+    let allBoughtProperties = objSquares.filter(obj => obj.owner == currentPlayer);
+    let propertiesCount = {};
+    allBoughtProperties.forEach(function (obj) {
+      if(propertiesCount[obj.color] == undefined){
+        propertiesCount[obj.color] = 0;
+      }
+      propertiesCount[obj.color]++;
+    });
+    for(let [key, value] of Object.entries(propertiesCount)) {
+      if(value == 3){
+        currentSets.push(key);
+      }
+    }
+  }
+  if (currentSets.length > 0){
+    buyHousesBtn.disabled = false;
+  }
 }
 function getPlayerProperties(player) {
   let allBoughtProperties = objSquares.filter(obj => obj.owner !== undefined);
