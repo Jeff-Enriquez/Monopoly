@@ -17,236 +17,8 @@ board.forEach(function(node) {
 })
 const allPlayers = [];
 /*----- app's state (variables) -----*/
-let objSquares = [
-  { //Go
-    name: "GO",
-  },
-  {
-    name: "Mediterranean Ave",
-    bought: false,
-    owner: undefined,
-    cost: 60,
-    rent: 2,
-  },
-  {
-    name: "Community Chest",
-  },
-  {
-    name: "Baltic Ave",
-    bought: false,
-    owner: undefined,
-    cost: 60,
-    rent: 4,
-  },
-  {
-    name: "Income Tax",
-  },
-  {
-    name: "Reading Railroad",
-    bought: false,
-    owner: undefined,
-    cost: 200,
-  },
-  {
-    name: "Oriental Ave",
-    bought: false,
-    owner: undefined,
-    cost: 100,
-    rent: 6,
-  },
-  {
-    name: "Chance",
-  },
-  {
-    name: "Vermont Ave",
-    bought: false,
-    owner: undefined,
-    cost: 100,
-    rent: 6,
-  },
-  {
-    name: "Connecticut Ave",
-    bought: false,
-    owner: undefined,
-    cost: 120,
-    rent: 8,
-  },
-  {
-    name: "Jail",
-  },
-  {
-    name: "St Charles Place",
-    bought: false,
-    owner: undefined,
-    cost: 140,
-    rent: 10,
-  },
-  {
-    name: "Electric Company",
-    bought: false,
-    owner: undefined,
-    cost: 150,
-  },
-  {
-    name: "States Ave",
-    bought: false,
-    owner: undefined,
-    cost: 140,
-    rent: 10,
-  },
-  {
-    name: "Virginia Ave",
-    bought: false,
-    owner: undefined,
-    cost: 160,
-    rent: 12,
-  },
-  {
-    name: "Pennsylvania Railroad",
-    bought: false,
-    owner: undefined,
-    cost: 200,
-  },
-  {
-    name: "St James Place",
-    bought: false,
-    owner: undefined,
-    cost: 180,
-    rent: 14,
-  },
-  {
-    name: "Community Chest",
-  },
-  {
-    name: "Tennesse Ave",
-    bought: false,
-    owner: undefined,
-    cost: 180,
-    rent: 14,
-  },
-  {
-    name: "New York Ave",
-    bought: false,
-    owner: undefined,
-    cost: 200,
-    rent: 16,
-  },
-  {
-    name: "Free Parking",
-  },
-  {
-    name: "Kentucky Ave",
-    bought: false,
-    owner: undefined,
-    cost: 220,
-    rent: 18,
-  },
-  {
-    name: "Chance",
-  },
-  {
-    name: "Indiana Ave",
-    bought: false,
-    owner: undefined,
-    cost: 220,
-    rent: 18,
-  },
-  {
-    name: "Illinois Ave",
-    bought: false,
-    owner: undefined,
-    cost: 240,
-    rent: 20,
-  },
-  {
-    name: "B. & O. Railroad",
-    bought: false,
-    owner: undefined,
-    cost: 200,
-  },
-  {
-    name: "Atlantic Ave",
-    bought: false,
-    owner: undefined,
-    cost: 260,
-    rent: 22,
-  },
-  {
-    name: "Ventnor Ave",
-    bought: false,
-    owner: undefined,
-    cost: 260,
-    rent: 22,
-  },
-  {
-    name: "Water Works",
-    bought: false,
-    owner: undefined,
-    cost: 150,
-  },
-  {
-    name: "Marvin Gardens",
-    bought: false,
-    owner: undefined,
-    cost: 280,
-    rent: 24,
-  },
-  {
-    name: "Go to Jail",
-  },
-  {
-    name: "Pacific Ave",
-    bought: false,
-    owner: undefined,
-    cost: 300,
-    rent: 26,
-  },
-  {
-    name: "No. Carolina Ave",
-    bought: false,
-    owner: undefined,
-    cost: 300,
-    rent: 26,
-  },
-  {
-    name: "Community Chest",
-  },
-  {
-    name: "Pennsylvania Ave",
-    bought: false,
-    owner: undefined,
-    cost: 320,
-    rent: 28,
-  },
-  {
-    name: "Short Line Railroad",
-    bought: false,
-    owner: undefined,
-    cost: 200,
-  },
-  {
-    name: "Chance",
-  },
-  {
-    name: "Park Place",
-    bought: false,
-    owner: undefined,
-    cost: 350,
-    rent: 35,
-  },
-  {
-    name: "Luxury Tax",
-  },
-  {
-    name: "Boardwalk",
-    bought: false,
-    owner: undefined,
-    cost: 400,
-    rent: 50,
-  },
-]
 let player1, player2, currentPlayer, allPlayersIdx, 
-lastLandedOn, lastRoll;
+lastLandedOn, lastRoll, objSquares;
 /*----- cached element references -----*/
 const emptyDiv = document.querySelector("#empty div");
 const emptyP = document.querySelector("#empty-p");
@@ -262,6 +34,7 @@ rollDiceBtn.addEventListener("click", function () {
   rollDice(currentPlayer);
   renderGameHistory(`${currentPlayer.name}: rolled ${lastRoll}`);
   lastLandedOn = objSquares[currentPlayer.location];
+  lastLandedOn;
   renderPlayerIcon();
   landedOn();
   render();
@@ -291,11 +64,12 @@ function landedOn() {
   n.includes("Jail") || n == "Electric Company" || n == "Water Works" ||
   n == "Free Parking" || n.includes("Tax")
   ) {
-  } else if (lastLandedOn.bought) {
-    currentPlayer.setMoney(-lastLandedOn.rent);
-    lastLandedOn.owner.setMoney(lastLandedOn.rent);
-    renderGameHistory(`${currentPlayer.name}: paid ${lastLandedOn.rent} to ${lastLandedOn.owner.name}`);
-  } else {
+  } else if (lastLandedOn.bought && lastLandedOn.owner != currentPlayer) {
+    let rent = getRent();
+    currentPlayer.setMoney(-rent);
+    lastLandedOn.owner.setMoney(rent);
+    renderGameHistory(`${currentPlayer.name}: paid ${rent} to ${lastLandedOn.owner.name}`);
+  } else if (!lastLandedOn.bought) {
     renderBuyProperty();
     return;
   }
@@ -304,6 +78,256 @@ function landedOn() {
 function init() {
   player1 = new Player("Jeff", "blue");
   player2 = new Player("Zane", "red");
+  objSquares = [
+    { //Go
+      name: "GO",
+    },
+    {
+      name: "Mediterranean Ave",
+      bought: false,
+      owner: undefined,
+      cost: 60,
+      rent: 2,
+      color: "brown",
+    },
+    {
+      name: "Community Chest",
+    },
+    {
+      name: "Baltic Ave",
+      bought: false,
+      owner: undefined,
+      cost: 60,
+      rent: 4,
+      color: "brown",
+    },
+    {
+      name: "Income Tax",
+    },
+    {
+      name: "Reading Railroad",
+      bought: false,
+      owner: undefined,
+      cost: 200,
+    },
+    {
+      name: "Oriental Ave",
+      bought: false,
+      owner: undefined,
+      cost: 100,
+      rent: 6,
+      color: "light-blue",
+    },
+    {
+      name: "Chance",
+    },
+    {
+      name: "Vermont Ave",
+      bought: false,
+      owner: undefined,
+      cost: 100,
+      rent: 6,
+      color: "light-blue",
+    },
+    {
+      name: "Connecticut Ave",
+      bought: false,
+      owner: undefined,
+      cost: 120,
+      rent: 8,
+      color: "light-blue",
+    },
+    {
+      name: "Jail",
+    },
+    {
+      name: "St Charles Place",
+      bought: false,
+      owner: undefined,
+      cost: 140,
+      rent: 10,
+      color: "pink",
+    },
+    {
+      name: "Electric Company",
+      bought: false,
+      owner: undefined,
+      cost: 150,
+    },
+    {
+      name: "States Ave",
+      bought: false,
+      owner: undefined,
+      cost: 140,
+      rent: 10,
+      color: "pink",
+    },
+    {
+      name: "Virginia Ave",
+      bought: false,
+      owner: undefined,
+      cost: 160,
+      rent: 12,
+      color: "pink",
+    },
+    {
+      name: "Pennsylvania Railroad",
+      bought: false,
+      owner: undefined,
+      cost: 200,
+    },
+    {
+      name: "St James Place",
+      bought: false,
+      owner: undefined,
+      cost: 180,
+      rent: 14,
+      color: "orange",
+    },
+    {
+      name: "Community Chest",
+    },
+    {
+      name: "Tennesse Ave",
+      bought: false,
+      owner: undefined,
+      cost: 180,
+      rent: 14,
+      color: "orange",
+    },
+    {
+      name: "New York Ave",
+      bought: false,
+      owner: undefined,
+      cost: 200,
+      rent: 16,
+      color: "orange",
+    },
+    {
+      name: "Free Parking",
+    },
+    {
+      name: "Kentucky Ave",
+      bought: false,
+      owner: undefined,
+      cost: 220,
+      rent: 18,
+      color: "red",
+    },
+    {
+      name: "Chance",
+    },
+    {
+      name: "Indiana Ave",
+      bought: false,
+      owner: undefined,
+      cost: 220,
+      rent: 18,
+      color: "red",
+    },
+    {
+      name: "Illinois Ave",
+      bought: false,
+      owner: undefined,
+      cost: 240,
+      rent: 20,
+      color: "red",
+    },
+    {
+      name: "B. & O. Railroad",
+      bought: false,
+      owner: undefined,
+      cost: 200,
+    },
+    {
+      name: "Atlantic Ave",
+      bought: false,
+      owner: undefined,
+      cost: 260,
+      rent: 22,
+      color: "yellow",
+    },
+    {
+      name: "Ventnor Ave",
+      bought: false,
+      owner: undefined,
+      cost: 260,
+      rent: 22,
+      color: "yellow",
+    },
+    {
+      name: "Water Works",
+      bought: false,
+      owner: undefined,
+      cost: 150,
+    },
+    {
+      name: "Marvin Gardens",
+      bought: false,
+      owner: undefined,
+      cost: 280,
+      rent: 24,
+      color: "yellow",
+    },
+    {
+      name: "Go to Jail",
+    },
+    {
+      name: "Pacific Ave",
+      bought: false,
+      owner: undefined,
+      cost: 300,
+      rent: 26,
+      color: "green",
+    },
+    {
+      name: "No. Carolina Ave",
+      bought: false,
+      owner: undefined,
+      cost: 300,
+      rent: 26,
+      color: "green",
+    },
+    {
+      name: "Community Chest",
+    },
+    {
+      name: "Pennsylvania Ave",
+      bought: false,
+      owner: undefined,
+      cost: 320,
+      rent: 28,
+      color: "green",
+    },
+    {
+      name: "Short Line Railroad",
+      bought: false,
+      owner: undefined,
+      cost: 200,
+    },
+    {
+      name: "Chance",
+    },
+    {
+      name: "Park Place",
+      bought: false,
+      owner: undefined,
+      cost: 350,
+      rent: 35,
+      color: "dark-blue",
+    },
+    {
+      name: "Luxury Tax",
+    },
+    {
+      name: "Boardwalk",
+      bought: false,
+      owner: undefined,
+      cost: 400,
+      rent: 50,
+      color: "dark-blue",
+    },
+  ]  
   allPlayers.push(player1, player2);
   allPlayersIdx = 0;
   currentPlayer = allPlayers[allPlayersIdx];
@@ -385,6 +409,16 @@ function rollDice(player){
     player.location -= 40;
     player.setMoney(200);
   }
+}
+function getRent(){
+  let propertyColorSet = objSquares.filter(obj => obj.color === lastLandedOn.color);
+  let ownerSet = propertyColorSet.filter(obj => obj.owner === lastLandedOn.owner);
+  if(ownerSet[0].name === "Mediterranean Ave" && ownerSet[1].name === "Baltic Ave"){
+    return lastLandedOn.rent * 2;
+  } else if (ownerSet.length == 3) {
+    return lastLandedOn.rent * 2;
+  }
+  return lastLandedOn.rent;
 }
 class Player {
   constructor(name, color) {
