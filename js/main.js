@@ -62,9 +62,12 @@ function landedOn() {
   let n = lastLandedOn.name;
   if (n == "GO" || n == "Chance" || n == "Community Chest" ||
   n.includes("Jail") ||
-  n == "Free Parking" || n.includes("Tax")
-  ) {
-  } else if (lastLandedOn.bought && lastLandedOn.owner != currentPlayer) {
+  n == "Free Parking" || n == "Income Tax") {
+  } else if (n == "Luxury Tax"){
+    currentPlayer.setMoney(-100);
+    renderGameHistory(`${currentPlayer.name}: paid 100 for Luxury Tax`);
+  } 
+  else if (lastLandedOn.bought && lastLandedOn.owner != currentPlayer) {
     let rent = getRent();
     currentPlayer.setMoney(-rent);
     lastLandedOn.owner.setMoney(rent);
