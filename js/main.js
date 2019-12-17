@@ -733,20 +733,23 @@ function buildHouses(color, num){
   for(let i = 0; i < num; i++){
     let houseCount = 10;
     ArrOfObjHouses.forEach(function (obj, idx){
-      if(obj.totalHouses < houseCount){
+      if(obj.totalHouses <= houseCount){
         fewestHousesIdx = idx;
         houseCount = obj.totalHouses;
       }
     })
     ArrOfObjHouses[fewestHousesIdx].totalHouses++;
-    let house = document.createElement("div");
-    house.style.width = "10px";
-    house.style.height = "10px";
-    house.style.cssFloat = "left";
-    house.style.margin = "2px";
-    house.style.backgroundColor = "green";
-    boardSquares[objSquares.indexOf(ArrOfObjHouses[fewestHousesIdx])].appendChild(house);
+    renderHouse(objSquares.indexOf(ArrOfObjHouses[fewestHousesIdx]));
   }
+}
+function renderHouse(boardSquaresIdx) {
+  let house = document.createElement("div");
+  house.style.width = "10px";
+  house.style.height = "10px";
+  house.style.cssFloat = "left";
+  house.style.margin = "2px";
+  house.style.backgroundColor = "green";
+  boardSquares[boardSquaresIdx].appendChild(house);
 }
 class Player {
   constructor(name, color) {
