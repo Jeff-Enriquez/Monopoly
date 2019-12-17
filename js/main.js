@@ -25,7 +25,8 @@ const modalP = document.querySelector("#modal-p");
 const btn1 = document.createElement("button");
 const btn2 = document.createElement("button");
 const input = document.createElement("input");
-  input.setAttribute("type", "text");
+  input.setAttribute("type", "number");
+  input.setAttribute("min", "1");
 const buyHousesBtn = document.querySelector("#buy-houses-btn");
 const rollDiceBtn = document.querySelector("#roll-dice");
 const mortgageBtn = document.querySelector("#mortgage-houses");
@@ -117,6 +118,7 @@ function init() {
       hotel: 250,
       houseCost: 50,
       mortgage: 30,
+      totalHouses: 0,
     },
     {
       name: "Community Chest",
@@ -135,6 +137,7 @@ function init() {
       hotel: 450,
       houseCost: 50,
       mortgage: 30,
+      totalHouses: 0,
     },
     {
       name: "Income Tax",
@@ -160,6 +163,7 @@ function init() {
       hotel: 550,
       houseCost: 50,
       mortgage: 50,
+      totalHouses: 0,
     },
     {
       name: "Chance",
@@ -178,6 +182,7 @@ function init() {
       hotel: 550,
       houseCost: 50,
       mortgage: 50,
+      totalHouses: 0,
     },
     {
       name: "Connecticut Ave",
@@ -193,6 +198,7 @@ function init() {
       hotel: 600,
       houseCost: 50,
       mortgage: 60,
+      totalHouses: 0,
     },
     {
       name: "Jail",
@@ -211,6 +217,7 @@ function init() {
       hotel: 750,
       houseCost: 100,
       mortgage: 70,
+      totalHouses: 0,
     },
     {
       name: "Electric Company",
@@ -233,6 +240,7 @@ function init() {
       hotel: 750,
       houseCost: 100,
       mortgage: 70,
+      totalHouses: 0,
     },
     {
       name: "Virginia Ave",
@@ -248,6 +256,7 @@ function init() {
       hotel: 900,
       houseCost: 100,
       mortgage: 80,
+      totalHouses: 0,
     },
     {
       name: "Pennsylvania Railroad",
@@ -270,6 +279,7 @@ function init() {
       hotel: 950,
       houseCost: 100,
       mortgage: 90,
+      totalHouses: 0,
     },
     {
       name: "Community Chest",
@@ -288,6 +298,7 @@ function init() {
       hotel: 950,
       houseCost: 100,
       mortgage: 90,
+      totalHouses: 0,
     },
     {
       name: "New York Ave",
@@ -303,6 +314,7 @@ function init() {
       hotel: 1000,
       houseCost: 100,
       mortgage: 100,
+      totalHouses: 0,
     },
     {
       name: "Free Parking",
@@ -321,6 +333,7 @@ function init() {
       hotel: 1050,
       houseCost: 150,
       mortgage: 110,
+      totalHouses: 0,
     },
     {
       name: "Chance",
@@ -339,6 +352,7 @@ function init() {
       hotel: 1050,
       houseCost: 150,
       mortgage: 110,
+      totalHouses: 0,
     },
     {
       name: "Illinois Ave",
@@ -354,6 +368,7 @@ function init() {
       hotel: 1100,
       houseCost: 150,
       mortgage: 120,
+      totalHouses: 0,
     },
     {
       name: "B. & O. Railroad",
@@ -376,6 +391,7 @@ function init() {
       hotel: 1150,
       houseCost: 150,
       mortgage: 130,
+      totalHouses: 0,
     },
     {
       name: "Ventnor Ave",
@@ -391,6 +407,7 @@ function init() {
       hotel: 1150,
       houseCost: 150,
       mortgage: 130,
+      totalHouses: 0,
     },
     {
       name: "Water Works",
@@ -413,6 +430,7 @@ function init() {
       hotel: 1200,
       houseCost: 150,
       mortgage: 140,
+      totalHouses: 0,
     },
     {
       name: "Go to Jail",
@@ -431,6 +449,7 @@ function init() {
       hotel: 1275,
       houseCost: 200,
       mortgage: 150,
+      totalHouses: 0,
     },
     {
       name: "No. Carolina Ave",
@@ -446,6 +465,7 @@ function init() {
       hotel: 1275,
       houseCost: 200,
       mortgage: 150,
+      totalHouses: 0,
     },
     {
       name: "Community Chest",
@@ -464,6 +484,7 @@ function init() {
       hotel: 1400,
       houseCost: 200,
       mortgage: 160,
+      totalHouses: 0,
     },
     {
       name: "Short Line Railroad",
@@ -489,6 +510,7 @@ function init() {
       hotel: 1500,
       houseCost: 200,
       mortgage: 175,
+      totalHouses: 0,
     },
     {
       name: "Luxury Tax",
@@ -507,6 +529,7 @@ function init() {
       hotel: 2000,
       houseCost: 200,
       mortgage: 200,
+      totalHouses: 0,
     },
   ]  
   allPlayers.push(player1, player2);
