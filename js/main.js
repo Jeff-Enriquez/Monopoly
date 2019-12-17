@@ -74,14 +74,9 @@ btn1.addEventListener("click", function() {
     }
   } else if(btn1.textContent == "Pay 50") {
     currentPlayer.setMoney(-50);
-    currentPlayer.inJail = false;
-    rollDice(currentPlayer);
+    currentPlayer.inJail = false; 
+    currentPlayer.jailRolls = 0;
     renderGameHistory(`${currentPlayer.name}: paid 50 to get out of jail`)
-    renderGameHistory(`${currentPlayer.name}: rolled ${lastRoll}`);
-    lastLandedOn = objSquares[currentPlayer.location];
-    lastLandedOn;
-    renderPlayerIcon();
-    landedOn();
     render();
   }
   rollDiceBtn.disabled = false;
@@ -96,15 +91,19 @@ btn2.addEventListener("click", function() {
   } else if(btn2.textContent == "Try for Doubles"){
     let roll1 = Math.ceil(Math.random()*6);
     let roll2 = Math.ceil(Math.random()*6);
-    if(roll1 == roll2){
-      renderGameHistory(`${currentPlayer.name} rolled ${roll1}, ${roll2} and is out of jail`);
+    currentPlayer.jailRolls++;
+    if(roll1 == roll2 || currentPlayer.jailRolls == 3){
+      renderGameHistory(`${currentPlayer.name}: rolled ${roll1}, ${roll2} and is out of jail`);
       rollDice(currentPlayer, roll1+roll2);
       lastLandedOn = objSquares[currentPlayer.location];
-      lastLandedOn;
       renderPlayerIcon();
+      currentPlayer.inJail = false;
+      currentPlayer.jailRolls = 0;
       landedOn();
+      return;
     } else {
-      renderGameHistory(`${currentPlayer.name} rolled ${roll1}, ${roll2} and is still in jail`);
+      renderGameHistory(`${currentPlayer.name}: rolled ${roll1}, ${roll2} and is still in jail. You will automatically get out on third roll.`);
+      nextPlayer();
     }
   }
   rollDiceBtn.disabled = false;
@@ -128,8 +127,7 @@ function landedOn() {
   } else if (n == "Luxury Tax"){
     currentPlayer.setMoney(-100);
     renderGameHistory(`${currentPlayer.name}: paid 100 for Luxury Tax`);
-  } 
-  else if (lastLandedOn.bought && lastLandedOn.owner != currentPlayer) {
+  } else if (lastLandedOn.bought && lastLandedOn.owner != currentPlayer) {
     let rent = getRent();
     currentPlayer.setMoney(-rent);
     lastLandedOn.owner.setMoney(rent);
@@ -708,10 +706,7 @@ function getPlayerProperties(player) {
   playerProperties = playerProperties.map(obj => obj.name);
   return playerProperties.join(", ");
 }
-function rollDice(player, roll = 10
-  //Math.ceil(Math.random()*6) + Math.ceil(Math.random()*6)
-
-){
+function rollDice(player, roll = Math.ceil(Math.random()*6) + Math.ceil(Math.random()*6)){
   lastRoll = roll;
   player.prevLocation = player.location;
   player.location += roll;
@@ -810,6 +805,7 @@ class Player {
     this.location = 0;
     this.prevLocation = 0;
     this.inJail = false;
+    this.jailRolls = 0;
   }
   getMoney(){
     return this._money;
