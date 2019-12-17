@@ -29,6 +29,7 @@ const input = document.createElement("input");
   input.setAttribute("type", "number");
   input.setAttribute("min", "1");
 const buyHousesBtn = document.querySelector("#buy-houses-btn");
+const buyHotelsBtn = document.querySelector("#buy-hotels-btn")
 const rollDiceBtn = document.querySelector("#roll-dice");
 const mortgageBtn = document.querySelector("#mortgage-houses");
 const tradeBtn = document.querySelector("#trade-properties");
@@ -71,6 +72,7 @@ btn1.addEventListener("click", function() {
       render();
       renderGameHistory(`${currentPlayer.name}: paid ${num*obj.houseCost} for ${num} houses`);
       buildHouses(color, num);
+      renderBuyHotelsBtn();
     }
   } else if(btn1.textContent == "Pay 50") {
     currentPlayer.setMoney(-50);
@@ -580,7 +582,8 @@ function init() {
   lastLandedOn = objSquares[0];
   lastRoll = 0;
   housesLeft = 32;
-  buyHousesBtn.disabled = false;
+  buyHousesBtn.disabled = true;
+  buyHotelsBtn.disabled = true;
   mortgageBtn.disabled = true;
   tradeBtn.disabled = true;
   renderInitialPlayerIcon(player1);
@@ -691,6 +694,41 @@ function renderBuyHousesBtn(){
   }
   currentPlayerPropertySets = currentSets;
 }
+function renderBuyHotelsBtn(){
+  buyHotelsBtn.disabled = true;
+  let arrObjW4Houses = objSquares.filter(obj => obj.owner == currentPlayer);
+  arrObjW4Houses = arrObjW4Houses.filter(obj => obj.totalHouses == 4);
+  let allColors = {};
+  arrObjW4Houses.forEach(function(obj){
+    if(allColors[obj.color] == undefined){
+      allColors[obj.color] = 1;
+    } else {
+      allColors[obj.color]++;
+    }
+  });
+  let colors = [];
+  for(let [key, value] of Object.entries(allColors)){
+    if(key == "brown" && value == 2){
+      colors.push(key);
+    } else if (value == 3){
+      colors.push(key);
+    }
+  }
+  if(colors.length > 0) {
+    buyHotelsBtn.disabled = false;
+  }
+  // let fewestHotelsIdx = 0;
+  // for(let i = 0; i < num; i++){
+  //   let houseCount = 10;
+  //   ArrOfObjHouses.forEach(function (obj, idx){
+  //     if(obj.totalHouses <= houseCount){
+  //       fewestHotelsIdx = idx;
+  //       houseCount = obj.totalHouses;
+  //     }
+  //   })
+  //   ArrOfObjHouses[fewestHotelsIdx].totalHouses++;
+  //   renderHouse(objSquares.indexOf(ArrOfObjHouses[fewestHotelsIdx]));
+}
 function nextPlayer() {
   if(allPlayersIdx == allPlayers.length - 1){
     allPlayersIdx = 0;
@@ -699,6 +737,7 @@ function nextPlayer() {
   }
   currentPlayer = allPlayers[allPlayersIdx];
   renderBuyHousesBtn();
+  renderBuyHotelsBtn();
 }
 function getPlayerProperties(player) {
   let allBoughtProperties = objSquares.filter(obj => obj.owner !== undefined);
