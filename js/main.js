@@ -24,7 +24,8 @@ const modal = document.querySelector("#modal");
 const modalP = document.querySelector("#modal-p");
 const btn1 = document.createElement("button");
 const btn2 = document.createElement("button");
-const br = document.createElement("br");
+const input = document.createElement("input");
+  input.setAttribute("type", "text");
 const buyHousesBtn = document.querySelector("#buy-houses-btn");
 const rollDiceBtn = document.querySelector("#roll-dice");
 const mortgageBtn = document.querySelector("#mortgage-houses");
@@ -55,7 +56,7 @@ btn1.addEventListener("click", function() {
     render();
     nextPlayer();
   } else if(btn1.textContent == "Submit"){
-    
+    buyHousesBtn.disabled = false;
   }
   rollDiceBtn.disabled = false;
   removeAllChildren(modal);
@@ -65,6 +66,7 @@ btn2.addEventListener("click", function() {
   if(btn2.textContent == "No") {
     nextPlayer();
   } else if(btn2.textContent == "Cancel"){
+    buyHousesBtn.disabled = false;
   }
   rollDiceBtn.disabled = false;
   removeAllChildren(modal);
@@ -146,8 +148,8 @@ function init() {
     },
     {
       name: "Oriental Ave",
-      bought: false,
-      owner: undefined,
+      bought: true,
+      owner: player1,
       cost: 100,
       rent: 6,
       color: "light-blue",
@@ -164,8 +166,8 @@ function init() {
     },
     {
       name: "Vermont Ave",
-      bought: false,
-      owner: undefined,
+      bought: true,
+      owner: player1,
       cost: 100,
       rent: 6,
       color: "light-blue",
@@ -179,8 +181,8 @@ function init() {
     },
     {
       name: "Connecticut Ave",
-      bought: false,
-      owner: undefined,
+      bought: true,
+      owner: player1,
       cost: 120,
       rent: 8,
       color: "light-blue",
@@ -552,12 +554,15 @@ function renderBuyHousesDisplay() {
     label.textContent = `${color}`;
     modal.appendChild(input);
     modal.appendChild(label);
-    modal.appendChild(br);
-    btn1.textContent = "Submit";
-    btn2.textContent = "Cancel";
-    modal.appendChild(btn1);
-    modal.appendChild(btn2);
+    modal.appendChild(document.createElement("br"));
+    modal.appendChild(document.createElement("br"));
   });
+  modal.appendChild(input);
+  modal.appendChild(document.createElement("br"));
+  btn1.textContent = "Submit";
+  btn2.textContent = "Cancel";
+  modal.appendChild(btn1);
+  modal.appendChild(btn2);
   modal.setAttribute("style", "visibility: visible");
 }
 function renderPlayerIcon() {
@@ -600,19 +605,19 @@ function renderBuyHousesBtn(){
   let currentSets = [];
   if(objSquares[1].owner == currentPlayer && objSquares[3].owner == currentPlayer){
     currentSets.push("brown");
-  } else {
-    let allBoughtProperties = objSquares.filter(obj => obj.owner == currentPlayer);
-    let propertiesCount = {};
-    allBoughtProperties.forEach(function (obj) {
-      if(propertiesCount[obj.color] == undefined){
-        propertiesCount[obj.color] = 0;
-      }
+  }
+  let allBoughtProperties = objSquares.filter(obj => obj.owner == currentPlayer);
+  let propertiesCount = {};
+  allBoughtProperties.forEach(function (obj) {
+    if(propertiesCount[obj.color] == undefined){
+      propertiesCount[obj.color] = 1;
+    } else {
       propertiesCount[obj.color]++;
-    });
-    for(let [key, value] of Object.entries(propertiesCount)) {
-      if(value == 3){
-        currentSets.push(key);
-      }
+    }
+  });
+  for(let [key, value] of Object.entries(propertiesCount)) {
+    if(value == 3){
+      currentSets.push(key);
     }
   }
   if (currentSets.length > 0){
