@@ -26,6 +26,8 @@ const emptyBtn1 = document.querySelector("#btn1");
 const emptyBtn2 = document.querySelector("#btn2");
 const buyHousesBtn = document.querySelector("#buy-houses-btn");
 const rollDiceBtn = document.querySelector("#roll-dice");
+const mortgageBtn = document.querySelector("#mortgage-houses");
+const tradeBtn = document.querySelector("#trade-properties");
 const accordion = document.querySelector("#accordion");
 const moneyPArray = document.querySelectorAll(".money");
 const namesH3Array = document.querySelectorAll("h3");
@@ -503,6 +505,8 @@ function init() {
   lastLandedOn = objSquares[0];
   lastRoll = 0;
   buyHousesBtn.disabled = false;
+  mortgageBtn.disabled = true;
+  tradeBtn.disabled = true;
   renderInitialPlayerIcon(player1);
   renderInitialPlayerIcon(player2);
   render();
