@@ -51,7 +51,7 @@ h1, p{
   color: blue;
 }
 #empty div {
-  visibility: hidden;
+  visibility: hidden; 
   background-color: rgba(222, 184, 135, 0.95);
   width: 300px;
   height: 300px;

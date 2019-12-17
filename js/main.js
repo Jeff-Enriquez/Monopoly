@@ -17,17 +17,14 @@ board.forEach(function(node) {
 })
 const allPlayers = [];
 /*----- app's state (variables) -----*/
-let player1, player2, currentPlayer, allPlayersIdx, 
-lastLandedOn, lastRoll, objSquares;
+let player1, player2, currentPlayer, currentPlayerPropertySets,
+  allPlayersIdx, lastLandedOn, lastRoll, objSquares;
 /*----- cached element references -----*/
-const buyPropertyDiv = document.querySelector("#buy-property-div");
-const buyPropertyP = document.querySelector("#buy-property-p");
-const buyHousesDiv = document.querySelector("#buy-houses-div");
-const buyHousesP = document.querySelector("#buy-houses-p");
+const modal = document.querySelector("#modal");
+const modalP = document.querySelector("#modal-p");
 const emptyBtn1 = document.querySelector("#btn1");
 const emptyBtn2 = document.querySelector("#btn2");
 const buyHousesBtn = document.querySelector("#buy-houses-btn");
-const submitHousesBtn = document.querySelector("#btn3");
 const rollDiceBtn = document.querySelector("#roll-dice");
 const accordion = document.querySelector("#accordion");
 const moneyPArray = document.querySelectorAll(".money");
@@ -44,7 +41,7 @@ rollDiceBtn.addEventListener("click", function () {
   render();
 });
 emptyBtn1.addEventListener("click", function() { 
-  buyPropertyDiv.setAttribute("style", "visibility: hidden");
+  modal.setAttribute("style", "visibility: hidden");
   if(currentPlayer.getMoney() > lastLandedOn.cost){
     lastLandedOn.bought = true;
     lastLandedOn.owner = currentPlayer;
@@ -56,10 +53,14 @@ emptyBtn1.addEventListener("click", function() {
   nextPlayer();
 });
 emptyBtn2.addEventListener("click", function() { 
-  buyPropertyDiv.setAttribute("style", "visibility: hidden");
+  modal.setAttribute("style", "visibility: hidden");
   rollDiceBtn.disabled = false;
   render();
   nextPlayer();
+});
+buyHousesBtn.addEventListener("click", function(){
+  rollDiceBtn.disabled = true;
+  renderBuyHousesDisplay();
 });
 /*----- functions -----*/
 function landedOn() {
@@ -91,22 +92,36 @@ function init() {
     },
     {
       name: "Mediterranean Ave",
-      bought: false,
-      owner: undefined,
+      bought: true,
+      owner: player1,
       cost: 60,
       rent: 2,
       color: "brown",
+      house1: 10,
+      house2: 30,
+      house3: 90,
+      house4: 160,
+      hotel: 250,
+      houseCost: 50,
+      mortgage: 30,
     },
     {
       name: "Community Chest",
     },
     {
       name: "Baltic Ave",
-      bought: false,
-      owner: undefined,
+      bought: true,
+      owner: player1,
       cost: 60,
       rent: 4,
       color: "brown",
+      house1: 20,
+      house2: 60,
+      house3: 180,
+      house4: 320,
+      hotel: 450,
+      houseCost: 50,
+      mortgage: 30,
     },
     {
       name: "Income Tax",
@@ -125,6 +140,13 @@ function init() {
       cost: 100,
       rent: 6,
       color: "light-blue",
+      house1: 30,
+      house2: 90,
+      house3: 270,
+      house4: 400,
+      hotel: 550,
+      houseCost: 50,
+      mortgage: 50,
     },
     {
       name: "Chance",
@@ -136,6 +158,13 @@ function init() {
       cost: 100,
       rent: 6,
       color: "light-blue",
+      house1: 30,
+      house2: 90,
+      house3: 270,
+      house4: 400,
+      hotel: 550,
+      houseCost: 50,
+      mortgage: 50,
     },
     {
       name: "Connecticut Ave",
@@ -144,6 +173,13 @@ function init() {
       cost: 120,
       rent: 8,
       color: "light-blue",
+      house1: 40,
+      house2: 100,
+      house3: 300,
+      house4: 450,
+      hotel: 600,
+      houseCost: 50,
+      mortgage: 60,
     },
     {
       name: "Jail",
@@ -155,6 +191,13 @@ function init() {
       cost: 140,
       rent: 10,
       color: "pink",
+      house1: 50,
+      house2: 150,
+      house3: 450,
+      house4: 625,
+      hotel: 750,
+      houseCost: 100,
+      mortgage: 70,
     },
     {
       name: "Electric Company",
@@ -170,6 +213,13 @@ function init() {
       cost: 140,
       rent: 10,
       color: "pink",
+      house1: 50,
+      house2: 150,
+      house3: 450,
+      house4: 625,
+      hotel: 750,
+      houseCost: 100,
+      mortgage: 70,
     },
     {
       name: "Virginia Ave",
@@ -178,6 +228,13 @@ function init() {
       cost: 160,
       rent: 12,
       color: "pink",
+      house1: 60,
+      house2: 180,
+      house3: 500,
+      house4: 700,
+      hotel: 900,
+      houseCost: 100,
+      mortgage: 80,
     },
     {
       name: "Pennsylvania Railroad",
@@ -193,6 +250,13 @@ function init() {
       cost: 180,
       rent: 14,
       color: "orange",
+      house1: 70,
+      house2: 200,
+      house3: 550,
+      house4: 750,
+      hotel: 950,
+      houseCost: 100,
+      mortgage: 90,
     },
     {
       name: "Community Chest",
@@ -204,6 +268,13 @@ function init() {
       cost: 180,
       rent: 14,
       color: "orange",
+      house1: 70,
+      house2: 200,
+      house3: 550,
+      house4: 750,
+      hotel: 950,
+      houseCost: 100,
+      mortgage: 90,
     },
     {
       name: "New York Ave",
@@ -212,6 +283,13 @@ function init() {
       cost: 200,
       rent: 16,
       color: "orange",
+      house1: 80,
+      house2: 220,
+      house3: 600,
+      house4: 800,
+      hotel: 1000,
+      houseCost: 100,
+      mortgage: 100,
     },
     {
       name: "Free Parking",
@@ -223,6 +301,13 @@ function init() {
       cost: 220,
       rent: 18,
       color: "red",
+      house1: 90,
+      house2: 250,
+      house3: 700,
+      house4: 875,
+      hotel: 1050,
+      houseCost: 150,
+      mortgage: 110,
     },
     {
       name: "Chance",
@@ -234,6 +319,13 @@ function init() {
       cost: 220,
       rent: 18,
       color: "red",
+      house1: 90,
+      house2: 250,
+      house3: 700,
+      house4: 875,
+      hotel: 1050,
+      houseCost: 150,
+      mortgage: 110,
     },
     {
       name: "Illinois Ave",
@@ -242,6 +334,13 @@ function init() {
       cost: 240,
       rent: 20,
       color: "red",
+      house1: 100,
+      house2: 300,
+      house3: 7750,
+      house4: 925,
+      hotel: 1100,
+      houseCost: 150,
+      mortgage: 120,
     },
     {
       name: "B. & O. Railroad",
@@ -257,6 +356,13 @@ function init() {
       cost: 260,
       rent: 22,
       color: "yellow",
+      house1: 110,
+      house2: 330,
+      house3: 800,
+      house4: 975,
+      hotel: 1150,
+      houseCost: 150,
+      mortgage: 130,
     },
     {
       name: "Ventnor Ave",
@@ -265,6 +371,13 @@ function init() {
       cost: 260,
       rent: 22,
       color: "yellow",
+      house1: 110,
+      house2: 330,
+      house3: 800,
+      house4: 975,
+      hotel: 1150,
+      houseCost: 150,
+      mortgage: 130,
     },
     {
       name: "Water Works",
@@ -280,6 +393,13 @@ function init() {
       cost: 280,
       rent: 24,
       color: "yellow",
+      house1: 120,
+      house2: 360,
+      house3: 850,
+      house4: 1025,
+      hotel: 1200,
+      houseCost: 150,
+      mortgage: 140,
     },
     {
       name: "Go to Jail",
@@ -291,6 +411,13 @@ function init() {
       cost: 300,
       rent: 26,
       color: "green",
+      house1: 130,
+      house2: 390,
+      house3: 900,
+      house4: 1100,
+      hotel: 1275,
+      houseCost: 200,
+      mortgage: 150,
     },
     {
       name: "No. Carolina Ave",
@@ -299,6 +426,13 @@ function init() {
       cost: 300,
       rent: 26,
       color: "green",
+      house1: 130,
+      house2: 390,
+      house3: 900,
+      house4: 1100,
+      hotel: 1275,
+      houseCost: 200,
+      mortgage: 150,
     },
     {
       name: "Community Chest",
@@ -310,6 +444,13 @@ function init() {
       cost: 320,
       rent: 28,
       color: "green",
+      house1: 150,
+      house2: 450,
+      house3: 1000,
+      house4: 1200,
+      hotel: 1400,
+      houseCost: 200,
+      mortgage: 160,
     },
     {
       name: "Short Line Railroad",
@@ -328,6 +469,13 @@ function init() {
       cost: 350,
       rent: 35,
       color: "dark-blue",
+      house1: 175,
+      house2: 500,
+      house3: 1100,
+      house4: 1300,
+      hotel: 1500,
+      houseCost: 200,
+      mortgage: 175,
     },
     {
       name: "Luxury Tax",
@@ -339,14 +487,22 @@ function init() {
       cost: 400,
       rent: 50,
       color: "dark-blue",
+      house1: 200,
+      house2: 600,
+      house3: 1400,
+      house4: 1700,
+      hotel: 2000,
+      houseCost: 200,
+      mortgage: 200,
     },
   ]  
   allPlayers.push(player1, player2);
   allPlayersIdx = 0;
   currentPlayer = allPlayers[allPlayersIdx];
+  currentSets = [];
   lastLandedOn = objSquares[0];
   lastRoll = 0;
-  buyHousesBtn.disabled = true;
+  buyHousesBtn.disabled = false;
   renderInitialPlayerIcon(player1);
   renderInitialPlayerIcon(player2);
   render();
@@ -369,6 +525,21 @@ function renderInitialPlayerIcon(player) {
   playerIcon.style.margin = "2px";
   playerIcon.style.backgroundColor = player.color;
   boardSquares[0].appendChild(playerIcon);
+}
+function renderBuyHousesDisplay() {
+  rollDiceBtn.disabled = true;
+  buyHousesBtn.disabled = true;
+  modalP.textContent = `${currentPlayer.name} select property color and enter number of houses you would like:`;
+  currentPlayerPropertySets.forEach(function (color) {
+    let input = document.createElement("input");
+    input.setAttribute("type", "radio");
+    input.id = `${color}`;
+    let label = document.createElement("label");
+    label.textContent = `${color}`;
+    modal.appendChild(input);
+    modal.appendChild(label);
+  });
+  modal.setAttribute("style", "visibility: visible");
 }
 function renderPlayerIcon() {
   let prevIcon = document.querySelector(`#${currentPlayer.name}`);
@@ -393,22 +564,14 @@ function renderPlayerIcon() {
 }
 function renderBuyProperty() {
   rollDiceBtn.disabled = true;
-  buyPropertyP.textContent = `${currentPlayer.name} would you like to buy ${lastLandedOn.name}?`;
-  buyPropertyDiv.setAttribute("style", "visibility: visible");
+  modalP.textContent = `${currentPlayer.name} would you like to buy ${lastLandedOn.name}?`;
+  modal.setAttribute("style", "visibility: visible");
 }
 function renderGameHistory(text) {
   text += "<br>";
   gameHistory.innerHTML = text.concat(gameHistory.innerHTML);
 }
-function nextPlayer() {
-  if(allPlayersIdx == allPlayers.length - 1){
-    allPlayersIdx = 0;
-  } else {
-    allPlayersIdx++;
-  }
-  currentPlayer = allPlayers[allPlayersIdx];
-
-  //check if next player can buy houses
+function renderBuyHousesBtn(){
   buyHousesBtn.disabled = true;
   let currentSets = [];
   if(objSquares[1].owner == currentPlayer && objSquares[3].owner == currentPlayer){
@@ -431,6 +594,16 @@ function nextPlayer() {
   if (currentSets.length > 0){
     buyHousesBtn.disabled = false;
   }
+  currentPlayerPropertySets = currentSets;
+}
+function nextPlayer() {
+  if(allPlayersIdx == allPlayers.length - 1){
+    allPlayersIdx = 0;
+  } else {
+    allPlayersIdx++;
+  }
+  currentPlayer = allPlayers[allPlayersIdx];
+  renderBuyHousesBtn();
 }
 function getPlayerProperties(player) {
   let allBoughtProperties = objSquares.filter(obj => obj.owner !== undefined);
