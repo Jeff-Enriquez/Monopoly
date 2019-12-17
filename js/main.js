@@ -22,8 +22,9 @@ let player1, player2, currentPlayer, currentPlayerPropertySets,
 /*----- cached element references -----*/
 const modal = document.querySelector("#modal");
 const modalP = document.querySelector("#modal-p");
-const emptyBtn1 = document.querySelector("#btn1");
-const emptyBtn2 = document.querySelector("#btn2");
+const btn1 = document.createElement("button");
+const btn2 = document.createElement("button");
+const br = document.createElement("br");
 const buyHousesBtn = document.querySelector("#buy-houses-btn");
 const rollDiceBtn = document.querySelector("#roll-dice");
 const mortgageBtn = document.querySelector("#mortgage-houses");
@@ -42,23 +43,31 @@ rollDiceBtn.addEventListener("click", function () {
   landedOn();
   render();
 });
-emptyBtn1.addEventListener("click", function() { 
+btn1.addEventListener("click", function() { 
   modal.setAttribute("style", "visibility: hidden");
-  if(currentPlayer.getMoney() > lastLandedOn.cost){
-    lastLandedOn.bought = true;
-    lastLandedOn.owner = currentPlayer;
-    currentPlayer.setMoney(-lastLandedOn.cost);
-    renderGameHistory(`${currentPlayer.name}: paid ${lastLandedOn.cost} for ${lastLandedOn.name}`);
+  if(btn1.textContent == "Yes"){
+    if(currentPlayer.getMoney() > lastLandedOn.cost){
+      lastLandedOn.bought = true;
+      lastLandedOn.owner = currentPlayer;
+      currentPlayer.setMoney(-lastLandedOn.cost);
+      renderGameHistory(`${currentPlayer.name}: paid ${lastLandedOn.cost} for ${lastLandedOn.name}`);
+    }
+    render();
+    nextPlayer();
+  } else if(btn1.textContent == "Submit"){
+    
   }
   rollDiceBtn.disabled = false;
-  render();
-  nextPlayer();
+  removeAllChildren(modal);
 });
-emptyBtn2.addEventListener("click", function() { 
+btn2.addEventListener("click", function() { 
   modal.setAttribute("style", "visibility: hidden");
+  if(btn2.textContent == "No") {
+    nextPlayer();
+  } else if(btn2.textContent == "Cancel"){
+  }
   rollDiceBtn.disabled = false;
-  render();
-  nextPlayer();
+  removeAllChildren(modal);
 });
 buyHousesBtn.addEventListener("click", function(){
   rollDiceBtn.disabled = true;
@@ -85,7 +94,7 @@ function landedOn() {
   }
   nextPlayer();
 }
-function init() {
+function init() { 
   player1 = new Player("Jeff", "blue");
   player2 = new Player("Zane", "red");
   objSquares = [
@@ -534,6 +543,7 @@ function renderBuyHousesDisplay() {
   rollDiceBtn.disabled = true;
   buyHousesBtn.disabled = true;
   modalP.textContent = `${currentPlayer.name} select property color and enter number of houses you would like:`;
+  modal.appendChild(modalP);
   currentPlayerPropertySets.forEach(function (color) {
     let input = document.createElement("input");
     input.setAttribute("type", "radio");
@@ -542,6 +552,11 @@ function renderBuyHousesDisplay() {
     label.textContent = `${color}`;
     modal.appendChild(input);
     modal.appendChild(label);
+    modal.appendChild(br);
+    btn1.textContent = "Submit";
+    btn2.textContent = "Cancel";
+    modal.appendChild(btn1);
+    modal.appendChild(btn2);
   });
   modal.setAttribute("style", "visibility: visible");
 }
@@ -569,6 +584,11 @@ function renderPlayerIcon() {
 function renderBuyProperty() {
   rollDiceBtn.disabled = true;
   modalP.textContent = `${currentPlayer.name} would you like to buy ${lastLandedOn.name}?`;
+  modal.appendChild(modalP);
+  btn1.textContent = "Yes";
+  modal.appendChild(btn1);
+  btn2.textContent = "No";
+  modal.appendChild(btn2);
   modal.setAttribute("style", "visibility: visible");
 }
 function renderGameHistory(text) {
@@ -641,6 +661,13 @@ function getRent(){
     return lastLandedOn.rent * 2;
   }
   return lastLandedOn.rent;
+}
+function removeAllChildren(parent){
+  var child = parent.lastElementChild;  
+  while (child) { 
+      parent.removeChild(child); 
+      child = parent.lastElementChild; 
+  } 
 }
 class Player {
   constructor(name, color) {
