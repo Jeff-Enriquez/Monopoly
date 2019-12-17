@@ -38,13 +38,17 @@ const namesH3Array = document.querySelectorAll("h3");
 const gameHistory = document.querySelector("#game-history");
 /*----- event listeners -----*/
 rollDiceBtn.addEventListener("click", function () {
-  rollDice(currentPlayer);
-  renderGameHistory(`${currentPlayer.name}: rolled ${lastRoll}`);
-  lastLandedOn = objSquares[currentPlayer.location];
-  lastLandedOn;
-  renderPlayerIcon();
-  landedOn();
-  render();
+  if(currentPlayer.inJail){
+    getOutOfJail();
+  }
+  if(!currentPlayer.inJail){
+    rollDice(currentPlayer);
+    renderGameHistory(`${currentPlayer.name}: rolled ${lastRoll}`);
+    lastLandedOn = objSquares[currentPlayer.location];
+    renderPlayerIcon();
+    landedOn();
+    render();
+  }
 });
 btn1.addEventListener("click", function() { 
   modal.setAttribute("style", "visibility: hidden");
@@ -68,6 +72,17 @@ btn1.addEventListener("click", function() {
       renderGameHistory(`${currentPlayer.name}: paid ${num*obj.houseCost} for ${num} houses`);
       buildHouses(color, num);
     }
+  } else if(btn1.textContent == "Pay 50") {
+    currentPlayer.setMoney(-50);
+    currentPlayer.inJail = false;
+    rollDice(currentPlayer);
+    renderGameHistory(`${currentPlayer.name}: paid 50 to get out of jail`)
+    renderGameHistory(`${currentPlayer.name}: rolled ${lastRoll}`);
+    lastLandedOn = objSquares[currentPlayer.location];
+    lastLandedOn;
+    renderPlayerIcon();
+    landedOn();
+    render();
   }
   rollDiceBtn.disabled = false;
   removeAllChildren(modal);
@@ -78,6 +93,19 @@ btn2.addEventListener("click", function() {
     nextPlayer();
   } else if(btn2.textContent == "Cancel"){
     buyHousesBtn.disabled = false;
+  } else if(btn2.textContent == "Try for Doubles"){
+    let roll1 = Math.ceil(Math.random()*6);
+    let roll2 = Math.ceil(Math.random()*6);
+    if(roll1 == roll2){
+      renderGameHistory(`${currentPlayer.name} rolled ${roll1}, ${roll2} and is out of jail`);
+      rollDice(currentPlayer, roll1+roll2);
+      lastLandedOn = objSquares[currentPlayer.location];
+      lastLandedOn;
+      renderPlayerIcon();
+      landedOn();
+    } else {
+      renderGameHistory(`${currentPlayer.name} rolled ${roll1}, ${roll2} and is still in jail`);
+    }
   }
   rollDiceBtn.disabled = false;
   removeAllChildren(modal);
@@ -90,8 +118,13 @@ buyHousesBtn.addEventListener("click", function(){
 function landedOn() {
   let n = lastLandedOn.name;
   if (n == "GO" || n == "Chance" || n == "Community Chest" ||
-  n.includes("Jail") ||
-  n == "Free Parking" || n == "Income Tax") {
+  n == "Jail" || n == "Free Parking" || n == "Income Tax") {
+  } else if(n == "Go to Jail") {
+    currentPlayer.inJail = true;
+    currentPlayer.prevLocation = currentPlayer.location;
+    currentPlayer.location = 10;
+    lastLandedOn = objSquares[currentPlayer.location];
+    renderPlayerIcon();
   } else if (n == "Luxury Tax"){
     currentPlayer.setMoney(-100);
     renderGameHistory(`${currentPlayer.name}: paid 100 for Luxury Tax`);
@@ -675,8 +708,10 @@ function getPlayerProperties(player) {
   playerProperties = playerProperties.map(obj => obj.name);
   return playerProperties.join(", ");
 }
-function rollDice(player){
-  let roll = Math.ceil(Math.random()*6) + Math.ceil(Math.random()*6);
+function rollDice(player, roll = 10
+  //Math.ceil(Math.random()*6) + Math.ceil(Math.random()*6)
+
+){
   lastRoll = roll;
   player.prevLocation = player.location;
   player.location += roll;
@@ -754,6 +789,19 @@ function renderHouse(boardSquaresIdx) {
   house.style.backgroundColor = "green";
   boardSquares[boardSquaresIdx].appendChild(house);
 }
+function getOutOfJail(){
+  rollDiceBtn.disabled = true;
+  modalP.textContent = `${currentPlayer.name} would you like to pay 50 to get out of jail or try rolling doubles?`;
+  modal.appendChild(modalP);
+  btn1.textContent = "Pay 50";
+  modal.appendChild(btn1);
+  btn2.textContent = "Try for Doubles";
+  modal.appendChild(btn2);
+  modal.setAttribute("style", "visibility: visible");
+  if(currentPlayer.getMoney() < 50){
+    btn1.disabled = true;
+  }
+}
 class Player {
   constructor(name, color) {
     this.name = name;
@@ -761,6 +809,7 @@ class Player {
     this._money = 1500;
     this.location = 0;
     this.prevLocation = 0;
+    this.inJail = false;
   }
   getMoney(){
     return this._money;
