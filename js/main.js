@@ -18,7 +18,8 @@ board.forEach(function(node) {
 const allPlayers = [];
 /*----- app's state (variables) -----*/
 let player1, player2, currentPlayer, currentPlayerPropertySets,
-  allPlayersIdx, lastLandedOn, lastRoll, objSquares;
+  allPlayersIdx, lastLandedOn, lastRoll, objSquares,
+  housesLeft;
 /*----- cached element references -----*/
 const modal = document.querySelector("#modal");
 const modalP = document.querySelector("#modal-p");
@@ -58,6 +59,15 @@ btn1.addEventListener("click", function() {
     nextPlayer();
   } else if(btn1.textContent == "Submit"){
     buyHousesBtn.disabled = false;
+    let color = document.querySelector('input[name="foo"]:checked').id;
+    let num = Number.parseInt(input.value);
+    let obj = objSquares.find(obj => obj.color == color);
+    if(currentPlayer.getMoney() >= num * obj.houseCost && housesAvailable(color, num)) {
+      currentPlayer.setMoney(-num*obj.houseCost);
+      render();
+      renderGameHistory(`${currentPlayer.name}: paid ${num*obj.houseCost} for ${num} houses`);
+      buildHouses(color, num);
+    }
   }
   rollDiceBtn.disabled = false;
   removeAllChildren(modal);
@@ -538,6 +548,7 @@ function init() {
   currentSets = [];
   lastLandedOn = objSquares[0];
   lastRoll = 0;
+  housesLeft = 32;
   buyHousesBtn.disabled = false;
   mortgageBtn.disabled = true;
   tradeBtn.disabled = true;
@@ -572,6 +583,7 @@ function renderBuyHousesDisplay() {
   currentPlayerPropertySets.forEach(function (color) {
     let input = document.createElement("input");
     input.setAttribute("type", "radio");
+    input.setAttribute("name", "foo");
     input.id = `${color}`;
     let label = document.createElement("label");
     label.textContent = `${color}`;
@@ -696,6 +708,45 @@ function removeAllChildren(parent){
       parent.removeChild(child); 
       child = parent.lastElementChild; 
   } 
+}
+function housesAvailable(color, num){
+  if(housesLeft - num < 0) {
+    return false;
+  }
+  let count = 0;
+  let ArrOfObjHouses = objSquares.filter(obj => obj.color == color);
+  ArrOfObjHouses.forEach(function (obj){
+    count += obj.totalHouses;
+  });
+  if(ArrOfObjHouses.length == 2 && count + num > 8){
+    return false;
+  }
+  if(count + num > 12){
+    return false;
+  }
+  housesLeft -= num;
+  return true;
+}
+function buildHouses(color, num){
+  let ArrOfObjHouses = objSquares.filter(obj => obj.color == color);
+  let fewestHousesIdx = 0;
+  for(let i = 0; i < num; i++){
+    let houseCount = 10;
+    ArrOfObjHouses.forEach(function (obj, idx){
+      if(obj.totalHouses < houseCount){
+        fewestHousesIdx = idx;
+        houseCount = obj.totalHouses;
+      }
+    })
+    ArrOfObjHouses[fewestHousesIdx].totalHouses++;
+    let house = document.createElement("div");
+    house.style.width = "10px";
+    house.style.height = "10px";
+    house.style.cssFloat = "left";
+    house.style.margin = "2px";
+    house.style.backgroundColor = "green";
+    boardSquares[objSquares.indexOf(ArrOfObjHouses[fewestHousesIdx])].appendChild(house);
+  }
 }
 class Player {
   constructor(name, color) {
