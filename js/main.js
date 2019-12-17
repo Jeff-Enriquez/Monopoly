@@ -686,6 +686,9 @@ function rollDice(player){
   }
 }
 function getRent(){
+  if(lastLandedOn.totalHouses > 0){
+    return lastLandedOn[`house${lastLandedOn.totalHouses}`];
+  }
   let propertyColorSet = objSquares.filter(obj => obj.color === lastLandedOn.color);
   let ownerSet = propertyColorSet.filter(obj => obj.owner === lastLandedOn.owner);
   if (ownerSet[0].color === "black") {
