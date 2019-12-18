@@ -17,9 +17,8 @@ board.forEach(function(node) {
 })
 const allPlayers = [];
 /*----- app's state (variables) -----*/
-let player1, player2, currentPlayer, currentPlayerPropertySets,
-  allPlayersIdx, lastLandedOn, lastRoll, objSquares,
-  housesLeft;
+let player1, player2, currentPlayer, currentPlayerPropertySets, currentPlayerHouseSets,
+  allPlayersIdx, lastLandedOn, lastRoll, objSquares, housesLeft, hotelsLeft;
 /*----- cached element references -----*/
 const modal = document.querySelector("#modal");
 const modalP = document.querySelector("#modal-p");
@@ -62,7 +61,7 @@ btn1.addEventListener("click", function() {
     }
     render();
     nextPlayer();
-  } else if(btn1.textContent == "Submit"){
+  } else if(btn1.id == "houses"){
     buyHousesBtn.disabled = false;
     let color = document.querySelector('input[name="foo"]:checked').id;
     let num = Number.parseInt(input.value);
@@ -80,6 +79,13 @@ btn1.addEventListener("click", function() {
     currentPlayer.jailRolls = 0;
     renderGameHistory(`${currentPlayer.name}: paid 50 to get out of jail`)
     render();
+  } else if(btn1.id == "hotel"){
+    let color = document.querySelector('input[name="foo"]:checked').id;
+    let num = Number.parseInt(input.value);
+    let obj = objSquares.find(obj => obj.color == color);
+    if(currentPlayer.getMoney() >= num * obj.houseCost && hotelsAvailable(color, num)) {
+      buildHotels(color, num);
+    }
   }
   rollDiceBtn.disabled = false;
   removeAllChildren(modal);
@@ -114,6 +120,9 @@ btn2.addEventListener("click", function() {
 buyHousesBtn.addEventListener("click", function(){
   rollDiceBtn.disabled = true;
   renderBuyHousesDisplay();
+});
+buyHotelsBtn.addEventListener("click", function () {
+  renderBuyHotelsDisplay();
 });
 /*----- functions -----*/
 function landedOn() {
@@ -582,6 +591,7 @@ function init() {
   lastLandedOn = objSquares[0];
   lastRoll = 0;
   housesLeft = 32;
+  hotelsLeft = 12;
   buyHousesBtn.disabled = true;
   buyHotelsBtn.disabled = true;
   mortgageBtn.disabled = true;
@@ -629,6 +639,33 @@ function renderBuyHousesDisplay() {
   modal.appendChild(input);
   modal.appendChild(document.createElement("br"));
   btn1.textContent = "Submit";
+  btn1.id = "houses";
+  btn2.textContent = "Cancel";
+  modal.appendChild(btn1);
+  modal.appendChild(btn2);
+  modal.setAttribute("style", "visibility: visible");
+}
+function renderBuyHotelsDisplay() {
+  rollDiceBtn.disabled = true;
+  buyHousesBtn.disabled = true;
+  modalP.textContent = `${currentPlayer.name} select property color and enter number of hotels you would like:`;
+  modal.appendChild(modalP);
+  currentPlayerHouseSets.forEach(function (color) {
+    let input = document.createElement("input");
+    input.setAttribute("type", "radio");
+    input.setAttribute("name", "foo");
+    input.id = `${color}`;
+    let label = document.createElement("label");
+    label.textContent = `${color}`;
+    modal.appendChild(input);
+    modal.appendChild(label);
+    modal.appendChild(document.createElement("br"));
+    modal.appendChild(document.createElement("br"));
+  });
+  modal.appendChild(input);
+  modal.appendChild(document.createElement("br"));
+  btn1.textContent = "Submit";
+  btn1.id = "hotel";
   btn2.textContent = "Cancel";
   modal.appendChild(btn1);
   modal.appendChild(btn2);
@@ -717,17 +754,7 @@ function renderBuyHotelsBtn(){
   if(colors.length > 0) {
     buyHotelsBtn.disabled = false;
   }
-  // let fewestHotelsIdx = 0;
-  // for(let i = 0; i < num; i++){
-  //   let houseCount = 10;
-  //   ArrOfObjHouses.forEach(function (obj, idx){
-  //     if(obj.totalHouses <= houseCount){
-  //       fewestHotelsIdx = idx;
-  //       houseCount = obj.totalHouses;
-  //     }
-  //   })
-  //   ArrOfObjHouses[fewestHotelsIdx].totalHouses++;
-  //   renderHouse(objSquares.indexOf(ArrOfObjHouses[fewestHotelsIdx]));
+  currentPlayerHouseSets = colors;
 }
 function nextPlayer() {
   if(allPlayersIdx == allPlayers.length - 1){
@@ -799,6 +826,24 @@ function housesAvailable(color, num){
   housesLeft -= num;
   return true;
 }
+function hotelsAvailable(color, num){
+  if(hotelsLeft - num < 0) {
+    return false;
+  }
+  let count = 0;
+  let ArrOfObjHotels = objSquares.filter(obj => obj.color == color);
+  ArrOfObjHotels.forEach(function (obj){
+    count += obj.totalHouses;
+  });
+  if(ArrOfObjHotels.length == 2 && count + num > 10){
+    return false;
+  }
+  if(count + num > 15){
+    return false;
+  }
+  hotelsLeft -= num;
+  return true;
+}
 function buildHouses(color, num){
   let ArrOfObjHouses = objSquares.filter(obj => obj.color == color);
   let fewestHousesIdx = 0;
@@ -812,6 +857,21 @@ function buildHouses(color, num){
     })
     ArrOfObjHouses[fewestHousesIdx].totalHouses++;
     renderHouse(objSquares.indexOf(ArrOfObjHouses[fewestHousesIdx]));
+  }
+}
+function buildHotels(color, num){
+  let ArrOfObjHotels = objSquares.filter(obj => obj.color == color);
+  let fewestHousesIdx = 0;
+  for(let i = 0; i < num; i++){
+    let houseCount = 10;
+    ArrOfObjHotels.forEach(function (obj, idx){
+      if(obj.totalHouses <= houseCount){
+        fewestHousesIdx = idx;
+        houseCount = obj.totalHouses;
+      }
+    })
+    ArrOfObjHotels[fewestHousesIdx].totalHouses++;
+    renderHouse(objSquares.indexOf(ArrOfObjHotels[fewestHousesIdx]));
   }
 }
 function renderHouse(boardSquaresIdx) {
