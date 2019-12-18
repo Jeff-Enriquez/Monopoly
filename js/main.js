@@ -127,6 +127,8 @@ btn1.addEventListener("click", function() {
         currentProperty.owner = currentPlayer;
       });
     }
+    renderBuyHousesBtn();
+    renderBuyHotelsBtn();
     render();
     tradeBtn.disabled = false;
   }
@@ -137,9 +139,16 @@ btn2.addEventListener("click", function() {
   modal.setAttribute("style", "visibility: hidden");
   if(btn2.textContent == "No") {
     nextPlayer();
-  } else if(btn2.textContent == "Cancel"){
+  } else if(btn2.id == "houses"){
     buyHousesBtn.disabled = false;
-  } else if(btn2.textContent == "Try for Doubles"){
+    tradeBtn.disabled = false;
+  } else if(btn2.id == "hotel"){
+    buyHotelsBtn.disabled = false;
+  } else if(btn2.id == "trade"){
+    tradeBtn.disabled = false;
+    renderBuyHousesBtn();
+    renderBuyHotelsBtn();
+  }else if(btn2.textContent == "Try for Doubles"){
     let roll1 = Math.ceil(Math.random()*6);
     let roll2 = Math.ceil(Math.random()*6);
     currentPlayer.jailRolls++;
@@ -174,7 +183,7 @@ tradeBtn.addEventListener("click", function() {
 function landedOn() {
   let n = lastLandedOn.name;
   if (n == "GO" || n == "Chance" || n == "Community Chest" ||
-  n == "Jail" || n == "Free Parking" || n == "Income Tax") {
+  n == "Jail" || n == "Free Parking") {
   } else if(n == "Go to Jail") {
     currentPlayer.inJail = true;
     currentPlayer.prevLocation = currentPlayer.location;
@@ -184,6 +193,9 @@ function landedOn() {
   } else if (n == "Luxury Tax"){
     currentPlayer.setMoney(-100);
     renderGameHistory(`${currentPlayer.name}: paid 100 for Luxury Tax`);
+  } else if (n == "Income Tax"){
+    currentPlayer.setMoney(-200);
+    renderGameHistory(`${currentPlayer.name}: paid 200 for Income Tax`);
   } else if (lastLandedOn.bought && lastLandedOn.owner != currentPlayer) {
     let rent = getRent();
     currentPlayer.setMoney(-rent);
@@ -686,6 +698,7 @@ function renderBuyHousesDisplay() {
   btn1.textContent = "Submit";
   btn1.id = "houses";
   btn2.textContent = "Cancel";
+  btn2.id = "houses";
   modal.appendChild(btn1);
   modal.appendChild(btn2);
   modal.setAttribute("style", "visibility: visible");
@@ -712,6 +725,7 @@ function renderBuyHotelsDisplay() {
   btn1.textContent = "Submit";
   btn1.id = "hotel";
   btn2.textContent = "Cancel";
+  btn2.id = "hotel";
   modal.appendChild(btn1);
   modal.appendChild(btn2);
   modal.setAttribute("style", "visibility: visible");
@@ -808,7 +822,10 @@ function renderTradeDisplay(){
   });
   btn1.id = "trade";
   btn1.textContent = "Trade";
+  btn2.textContent = "Cancel";
+  btn2.id = "trade";
   modal.appendChild(btn1);
+  modal.appendChild(btn2);
   modal.setAttribute("style", "visibility: visible");
 }
 function renderPlayerIcon() {
