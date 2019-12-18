@@ -84,7 +84,10 @@ btn1.addEventListener("click", function() {
     let num = Number.parseInt(input.value);
     let obj = objSquares.find(obj => obj.color == color);
     if(currentPlayer.getMoney() >= num * obj.houseCost && hotelsAvailable(color, num)) {
+      currentPlayer.setMoney(-num*obj.houseCost);
       buildHotels(color, num);
+      renderGameHistory(`${currentPlayer.name}: paid ${num*obj.houseCost} for ${num} hotels`);
+      render();
     }
   }
   rollDiceBtn.disabled = false;
@@ -772,7 +775,9 @@ function getPlayerProperties(player) {
   playerProperties = playerProperties.map(obj => obj.name);
   return playerProperties.join(", ");
 }
-function rollDice(player, roll = Math.ceil(Math.random()*6) + Math.ceil(Math.random()*6)){
+function rollDice(player, roll = 3
+  //Math.ceil(Math.random()*6) + Math.ceil(Math.random()*6)
+  ){
   lastRoll = roll;
   player.prevLocation = player.location;
   player.location += roll;
@@ -782,6 +787,9 @@ function rollDice(player, roll = Math.ceil(Math.random()*6) + Math.ceil(Math.ran
   }
 }
 function getRent(){
+  if(lastLandedOn.totalHouses == 5){
+    return lastLandedOn["hotel"];
+  }
   if(lastLandedOn.totalHouses > 0){
     return lastLandedOn[`house${lastLandedOn.totalHouses}`];
   }
