@@ -151,7 +151,7 @@ function landedOn() {
 }
 function init() { 
   player1 = new Player("Jeff", "blue");
-  player2 = new Player("Zane", "red");
+  player2 = new Player("Zane", "yellow");
   objSquares = [
     {
       name: "GO",
@@ -871,8 +871,18 @@ function buildHotels(color, num){
       }
     })
     ArrOfObjHotels[fewestHousesIdx].totalHouses++;
-    renderHouse(objSquares.indexOf(ArrOfObjHotels[fewestHousesIdx]));
+    renderHotel(objSquares.indexOf(ArrOfObjHotels[fewestHousesIdx]));
   }
+}
+function renderHotel(boardSquaresIdx){
+  let house = document.createElement("div");
+  house.style.width = "10px";
+  house.style.height = "10px";
+  house.style.cssFloat = "left";
+  house.style.margin = "2px";
+  house.style.backgroundColor = "red";
+  removeAllChildren(boardSquares[boardSquaresIdx]);
+  boardSquares[boardSquaresIdx].appendChild(house);
 }
 function renderHouse(boardSquaresIdx) {
   let house = document.createElement("div");
