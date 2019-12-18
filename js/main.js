@@ -90,20 +90,45 @@ btn1.addEventListener("click", function() {
       render();
     }
   } else if(btn1.id == "trade"){
-    // let allProperties = Array.prototype.slice.call(document.querySelectorAll("input:checked"));
-    // let allMoney = Array.prototype.slice.call(document.querySelectorAll("input[type=checkbox]"));
-    // let money = 0;
-    // let playerName;
-    // allMoney.forEach(function (obj) {
-    //   if(obj.value > 0){
-    //     money = obj.value;
-    //     playerName = obj.className;
-    //   }
-    // });
-    // if(playerName == currentPlayer.name){
-    //   currentPlayer.setMoney(-money);
-    // }
-
+    let allProperties = Array.prototype.slice.call(document.querySelectorAll("input:checked"));
+    let allMoney = Array.prototype.slice.call(document.querySelectorAll("input[type=number]"));
+    let moneyObj = allMoney.find(obj => obj.value > 0);
+    let money;
+    let tradiePlayer = undefined;
+    let traderProps, tradieProps;
+    if(moneyObj != undefined) {
+      money = Number.parseInt(moneyObj.value);
+      let player = allPlayers.find(player => player.name == moneyObj.className);
+      if(player != currentPlayer){
+        tradiePlayer = player;
+        currentPlayer.setMoney(money);
+        tradiePlayer.setMoney(-money);
+      } else {
+        currentPlayer.setMoney(-money);
+      }
+    }
+    traderProps = allProperties.filter(obj => obj.className == currentPlayer.name);
+    tradieProps = allProperties.filter(obj => obj.className != currentPlayer.name);
+    if(tradiePlayer == undefined){
+      tradiePlayer = allPlayers.find(player => player.name == tradieProps[0].className);
+      if(moneyObj != undefined){
+        tradiePlayer.setMoney(money);
+      }
+    }
+    if(traderProps != undefined){
+      traderProps.forEach(function(traderObj){
+        let currentProperty = objSquares.find(obj => obj.name == traderObj.id);
+        currentProperty.owner = tradiePlayer;
+      });
+    }
+    if(tradieProps != undefined){
+      tradieProps.forEach(function(tradieObj){
+        let currentProperty = objSquares.find(obj => obj.name == tradieObj.id);
+        currentProperty.owner = currentPlayer;
+      });
+    }
+    render();
+    tradeBtn.disabled = false;
   }
   rollDiceBtn.disabled = false;
   removeAllChildren(modal);
@@ -709,7 +734,22 @@ function renderTradeDisplay(){
   div.style.cssText = "overflow: auto; width: 150px; height: 35px; border: 1px solid black; padding: 2px; margin: 5px auto;";
   modal.appendChild(div);
   let currentPlayerProperties = objSquares.filter(obj => obj.owner == currentPlayer);
-  currentPlayerProperties = currentPlayerProperties.filter(obj => obj.totalHouses == 0 || obj.totalHouses == undefined);
+  currentPlayerProperties = currentPlayerProperties.filter(function (obj) {
+    if(obj.totalHouses == undefined){
+      return true;
+    }
+    if(obj.totalHouses != 0) {
+      return false;
+    }
+    let allOwnedColors = currentPlayerProperties.filter(x => x.color == obj.color);
+    if(allOwnedColors.length == 2 && obj.color == "brown"){
+      return false;
+    }
+    if(allOwnedColors.length == 3){
+      return false;
+    }
+    return true;
+  });
   currentPlayerProperties.forEach(function (obj) {
     let checkBox = document.createElement("input");
     checkBox.setAttribute("type", "checkbox");
@@ -737,7 +777,22 @@ function renderTradeDisplay(){
       pDiv.style.cssText = "overflow: auto; width: 150px; height: 35px; border: 1px solid black; padding: 2px; margin: 5px auto;";
       modal.appendChild(pDiv);
       let playerProperties = objSquares.filter(obj => obj.owner == player);
-      playerProperties = playerProperties.filter(obj => obj.totalHouses == 0 || obj.totalHouses == undefined);
+      playerProperties = playerProperties.filter(function (obj) {
+        if(obj.totalHouses == undefined){
+          return true;
+        }
+        if(obj.totalHouses != 0) {
+          return false;
+        }
+        let allOwnedColors = playerProperties.filter(x => x.color == obj.color);
+        if(allOwnedColors.length == 2 && obj.color == "brown"){
+          return false;
+        }
+        if(allOwnedColors.length == 3){
+          return false;
+        }
+        return true;
+      });
       playerProperties.forEach(function (obj) {
         let pCheckBox = document.createElement("input");
         pCheckBox.setAttribute("type", "checkbox");
@@ -751,7 +806,7 @@ function renderTradeDisplay(){
       });
     }
   });
-  btn1.id = "Trade";
+  btn1.id = "trade";
   btn1.textContent = "Trade";
   modal.appendChild(btn1);
   modal.setAttribute("style", "visibility: visible");
