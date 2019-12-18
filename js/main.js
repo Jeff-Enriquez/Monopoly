@@ -127,6 +127,9 @@ buyHousesBtn.addEventListener("click", function(){
 buyHotelsBtn.addEventListener("click", function () {
   renderBuyHotelsDisplay();
 });
+tradeBtn.addEventListener("click", function() {
+  renderTradeDisplay();
+});
 /*----- functions -----*/
 function landedOn() {
   let n = lastLandedOn.name;
@@ -598,7 +601,7 @@ function init() {
   buyHousesBtn.disabled = true;
   buyHotelsBtn.disabled = true;
   mortgageBtn.disabled = true;
-  tradeBtn.disabled = true;
+  //tradeBtn.disabled = true;
   renderInitialPlayerIcon(player1);
   renderInitialPlayerIcon(player2);
   render();
@@ -672,6 +675,54 @@ function renderBuyHotelsDisplay() {
   btn2.textContent = "Cancel";
   modal.appendChild(btn1);
   modal.appendChild(btn2);
+  modal.setAttribute("style", "visibility: visible");
+}
+function renderTradeDisplay(){
+  rollDiceBtn.disabled = true;
+  buyHousesBtn.disabled = true;
+  modalP.textContent = `${currentPlayer.name} is trading: `;
+  modalP.style.display = "inline";
+  modal.appendChild(modalP);
+  let input = document.createElement("input");
+  input.setAttribute("type", "number");
+  input.setAttribute("min", "0");
+  input.setAttribute("max", `${currentPlayer.getMoney()-1}`);
+  input.class = `${currentPlayer.name}`;
+  modal.appendChild(input);
+  let div = document.createElement("div");
+  div.style.cssText = "overflow: auto; width: 150px; height: 30px; border: 1px solid black; padding: 2px; margin: 5px auto;";
+  div.class = `${currentPlayer.name}`;
+  let p = document.createElement("p")
+  p.textContent = "hello";
+  modal.appendChild(div);
+  div.appendChild(p);
+  // #game-history {
+  //   overflow: auto; 
+  //   width:300px; 
+  //   height:150px;
+  //   margin-bottom: 10px;
+  //   border: 2px solid black;
+  //   padding: 4px;
+  // }
+  // currentPlayerPropertySets.forEach(function (color) {
+  //   let input = document.createElement("input");
+  //   input.setAttribute("type", "radio");
+  //   input.setAttribute("name", "foo");
+  //   input.id = `${color}`;
+  //   let label = document.createElement("label");
+  //   label.textContent = `${color}`;
+  //   modal.appendChild(input);
+  //   modal.appendChild(label);
+  //   modal.appendChild(document.createElement("br"));
+  //   modal.appendChild(document.createElement("br"));
+  // });
+  // modal.appendChild(input);
+  // modal.appendChild(document.createElement("br"));
+  // btn1.textContent = "Submit";
+  // btn1.id = "houses";
+  // btn2.textContent = "Cancel";
+  // modal.appendChild(btn1);
+  // modal.appendChild(btn2);
   modal.setAttribute("style", "visibility: visible");
 }
 function renderPlayerIcon() {
