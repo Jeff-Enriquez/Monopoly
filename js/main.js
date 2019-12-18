@@ -57,6 +57,9 @@ btn1.addEventListener("click", function() {
       lastLandedOn.owner = currentPlayer;
       currentPlayer.setMoney(-lastLandedOn.cost);
       renderGameHistory(`${currentPlayer.name}: paid ${lastLandedOn.cost} for ${lastLandedOn.name}`);
+      renderBuyHotelsBtn();
+      renderBuyHousesBtn();
+      tradeBtn.disabled = false;
     }
     render();
     nextPlayer();
@@ -93,9 +96,8 @@ btn1.addEventListener("click", function() {
     let allProperties = Array.prototype.slice.call(document.querySelectorAll("input:checked"));
     let allMoney = Array.prototype.slice.call(document.querySelectorAll("input[type=number]"));
     let moneyObj = allMoney.find(obj => obj.value > 0);
-    let money;
     let tradiePlayer = undefined;
-    let traderProps, tradieProps;
+    let money, traderProps, tradieProps, moneyMessage, propMessage;
     if(moneyObj != undefined) {
       money = Number.parseInt(moneyObj.value);
       let player = allPlayers.find(player => player.name == moneyObj.className);
@@ -139,6 +141,9 @@ btn2.addEventListener("click", function() {
   modal.setAttribute("style", "visibility: hidden");
   if(btn2.textContent == "No") {
     nextPlayer();
+    renderBuyHotelsBtn();
+    renderBuyHousesBtn();
+    tradeBtn.disabled = false;
   } else if(btn2.id == "houses"){
     buyHousesBtn.disabled = false;
     tradeBtn.disabled = false;
@@ -851,6 +856,9 @@ function renderPlayerIcon() {
 }
 function renderBuyProperty() {
   rollDiceBtn.disabled = true;
+  buyHousesBtn.disabled = true;
+  tradeBtn.disabled = true;
+  buyHotelsBtn.disabled = true;
   modalP.textContent = `${currentPlayer.name} would you like to buy ${lastLandedOn.name}?`;
   modal.appendChild(modalP);
   btn1.textContent = "Yes";
