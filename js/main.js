@@ -30,7 +30,6 @@ const input = document.createElement("input");
 const buyHousesBtn = document.querySelector("#buy-houses-btn");
 const buyHotelsBtn = document.querySelector("#buy-hotels-btn")
 const rollDiceBtn = document.querySelector("#roll-dice");
-const mortgageBtn = document.querySelector("#mortgage-houses");
 const tradeBtn = document.querySelector("#trade-properties");
 const accordion = document.querySelector("#accordion");
 const moneyPArray = document.querySelectorAll(".money");
@@ -52,7 +51,7 @@ rollDiceBtn.addEventListener("click", function () {
 });
 btn1.addEventListener("click", function() { 
   modal.setAttribute("style", "visibility: hidden");
-  if(btn1.textContent == "Yes"){
+  if(btn1.id == "Yes"){
     if(currentPlayer.getMoney() > lastLandedOn.cost){
       lastLandedOn.bought = true;
       lastLandedOn.owner = currentPlayer;
@@ -73,7 +72,7 @@ btn1.addEventListener("click", function() {
       buildHouses(color, num);
       renderBuyHotelsBtn();
     }
-  } else if(btn1.textContent == "Pay 50") {
+  } else if(btn1.id == "Pay-50") {
     currentPlayer.setMoney(-50);
     currentPlayer.inJail = false; 
     currentPlayer.jailRolls = 0;
@@ -87,8 +86,24 @@ btn1.addEventListener("click", function() {
       currentPlayer.setMoney(-num*obj.houseCost);
       buildHotels(color, num);
       renderGameHistory(`${currentPlayer.name}: paid ${num*obj.houseCost} for ${num} hotels`);
+      renderBuyHousesBtn();
       render();
     }
+  } else if(btn1.id == "trade"){
+    // let allProperties = Array.prototype.slice.call(document.querySelectorAll("input:checked"));
+    // let allMoney = Array.prototype.slice.call(document.querySelectorAll("input[type=checkbox]"));
+    // let money = 0;
+    // let playerName;
+    // allMoney.forEach(function (obj) {
+    //   if(obj.value > 0){
+    //     money = obj.value;
+    //     playerName = obj.className;
+    //   }
+    // });
+    // if(playerName == currentPlayer.name){
+    //   currentPlayer.setMoney(-money);
+    // }
+
   }
   rollDiceBtn.disabled = false;
   removeAllChildren(modal);
@@ -263,8 +278,8 @@ function init() {
     },
     {
       name: "St Charles Place",
-      bought: false,
-      owner: undefined,
+      bought: true,
+      owner: player2,
       cost: 140,
       rent: 10,
       color: "pink",
@@ -279,8 +294,8 @@ function init() {
     },
     {
       name: "Electric Company",
-      bought: false,
-      owner: undefined,
+      bought: true,
+      owner: player2,
       cost: 150,
       color: "utility",
     },
@@ -600,7 +615,6 @@ function init() {
   hotelsLeft = 12;
   buyHousesBtn.disabled = true;
   buyHotelsBtn.disabled = true;
-  mortgageBtn.disabled = true;
   //tradeBtn.disabled = true;
   renderInitialPlayerIcon(player1);
   renderInitialPlayerIcon(player2);
@@ -680,6 +694,8 @@ function renderBuyHotelsDisplay() {
 function renderTradeDisplay(){
   rollDiceBtn.disabled = true;
   buyHousesBtn.disabled = true;
+  buyHotelsBtn.disabled = true;
+  tradeBtn.disabled = true;
   modalP.textContent = `${currentPlayer.name} is trading: `;
   modalP.style.display = "inline";
   modal.appendChild(modalP);
@@ -687,42 +703,57 @@ function renderTradeDisplay(){
   input.setAttribute("type", "number");
   input.setAttribute("min", "0");
   input.setAttribute("max", `${currentPlayer.getMoney()-1}`);
-  input.class = `${currentPlayer.name}`;
+  input.className = `${currentPlayer.name}`;
   modal.appendChild(input);
   let div = document.createElement("div");
-  div.style.cssText = "overflow: auto; width: 150px; height: 30px; border: 1px solid black; padding: 2px; margin: 5px auto;";
-  div.class = `${currentPlayer.name}`;
-  let p = document.createElement("p")
-  p.textContent = "hello";
+  div.style.cssText = "overflow: auto; width: 150px; height: 35px; border: 1px solid black; padding: 2px; margin: 5px auto;";
   modal.appendChild(div);
-  div.appendChild(p);
-  // #game-history {
-  //   overflow: auto; 
-  //   width:300px; 
-  //   height:150px;
-  //   margin-bottom: 10px;
-  //   border: 2px solid black;
-  //   padding: 4px;
-  // }
-  // currentPlayerPropertySets.forEach(function (color) {
-  //   let input = document.createElement("input");
-  //   input.setAttribute("type", "radio");
-  //   input.setAttribute("name", "foo");
-  //   input.id = `${color}`;
-  //   let label = document.createElement("label");
-  //   label.textContent = `${color}`;
-  //   modal.appendChild(input);
-  //   modal.appendChild(label);
-  //   modal.appendChild(document.createElement("br"));
-  //   modal.appendChild(document.createElement("br"));
-  // });
-  // modal.appendChild(input);
-  // modal.appendChild(document.createElement("br"));
-  // btn1.textContent = "Submit";
-  // btn1.id = "houses";
-  // btn2.textContent = "Cancel";
-  // modal.appendChild(btn1);
-  // modal.appendChild(btn2);
+  let currentPlayerProperties = objSquares.filter(obj => obj.owner == currentPlayer);
+  currentPlayerProperties = currentPlayerProperties.filter(obj => obj.totalHouses == 0 || obj.totalHouses == undefined);
+  currentPlayerProperties.forEach(function (obj) {
+    let checkBox = document.createElement("input");
+    checkBox.setAttribute("type", "checkbox");
+    checkBox.className = `${currentPlayer.name}`;
+    checkBox.id = `${obj.name}`;
+    let p = document.createElement("p");
+    p.style.display = "inline";
+    p.innerHTML = `${obj.name}<br>`
+    div.appendChild(checkBox);
+    div.appendChild(p);
+  });
+  allPlayers.forEach(function(player){
+    if(player != currentPlayer){
+      let pName = document.createElement("p");
+      pName.textContent = `${player.name}`;
+      pName.style.display = "inline";
+      modal.appendChild(pName);
+      let pInput = document.createElement("input");
+      pInput.setAttribute("type", "number");
+      pInput.setAttribute("min", "0");
+      pInput.setAttribute("max", `${player.getMoney()-1}`);
+      pInput.className = `${player.name}`;
+      modal.appendChild(pInput);
+      let pDiv = document.createElement("div");
+      pDiv.style.cssText = "overflow: auto; width: 150px; height: 35px; border: 1px solid black; padding: 2px; margin: 5px auto;";
+      modal.appendChild(pDiv);
+      let playerProperties = objSquares.filter(obj => obj.owner == player);
+      playerProperties = playerProperties.filter(obj => obj.totalHouses == 0 || obj.totalHouses == undefined);
+      playerProperties.forEach(function (obj) {
+        let pCheckBox = document.createElement("input");
+        pCheckBox.setAttribute("type", "checkbox");
+        pCheckBox.id = `${obj.name}`;
+        pCheckBox.className = `${player.name}`;
+        let pProperty = document.createElement("p");
+        pProperty.style.display = "inline";
+        pProperty.innerHTML = `${obj.name}<br>`
+        pDiv.appendChild(pCheckBox);
+        pDiv.appendChild(pProperty);
+      });
+    }
+  });
+  btn1.id = "Trade";
+  btn1.textContent = "Trade";
+  modal.appendChild(btn1);
   modal.setAttribute("style", "visibility: visible");
 }
 function renderPlayerIcon() {
@@ -751,6 +782,7 @@ function renderBuyProperty() {
   modalP.textContent = `${currentPlayer.name} would you like to buy ${lastLandedOn.name}?`;
   modal.appendChild(modalP);
   btn1.textContent = "Yes";
+  btn1.id = "Yes";
   modal.appendChild(btn1);
   btn2.textContent = "No";
   modal.appendChild(btn2);
@@ -826,9 +858,7 @@ function getPlayerProperties(player) {
   playerProperties = playerProperties.map(obj => obj.name);
   return playerProperties.join(", ");
 }
-function rollDice(player, roll = 3
-  //Math.ceil(Math.random()*6) + Math.ceil(Math.random()*6)
-  ){
+function rollDice(player, roll = Math.ceil(Math.random()*6) + Math.ceil(Math.random()*6)){
   lastRoll = roll;
   player.prevLocation = player.location;
   player.location += roll;
@@ -957,6 +987,7 @@ function getOutOfJail(){
   modalP.textContent = `${currentPlayer.name} would you like to pay 50 to get out of jail or try rolling doubles?`;
   modal.appendChild(modalP);
   btn1.textContent = "Pay 50";
+  btn1.id = "Pay-50";
   modal.appendChild(btn1);
   btn2.textContent = "Try for Doubles";
   modal.appendChild(btn2);
