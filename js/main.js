@@ -16,6 +16,7 @@ board.forEach(function(node) {
   })
 })
 const colors = ["blue", "yellow", "pink", "purple", "brown", "orange"];
+const allP = [];
 /*----- app's state (variables) -----*/
 let allPlayers, currentPlayer, currentPlayerPropertySets, currentPlayerHouseSets,
   allPlayersIdx, lastLandedOn, lastRoll, objSquares, housesLeft, hotelsLeft;
@@ -133,6 +134,7 @@ btn1.addEventListener("click", function() {
   } else if (btn1.id == "Add"){
     let playerName = document.querySelector("#player").value;
     allPlayers.push(new Player(playerName, colors[allPlayersIdx]));
+    allP.push(allPlayers[allPlayers.length-1]);
     allPlayersIdx++;
     removeAllChildren(modal);
     renderGetPlayers();
@@ -715,7 +717,7 @@ function renderGetPlayers(){
   modal.setAttribute("style", "visibility: visible");
 }
 function render() {
-  allPlayers.forEach(function (player, idx){
+  allP.forEach(function (player, idx){
     moneyPArray[idx].textContent = `Money: ${player.getMoney()}`;
     moneyPArray[idx].innerHTML += `<br>Properties: ${getPlayerProperties(player)}`;
     namesH3Array[idx].textContent = `${player.name}`
@@ -1172,6 +1174,7 @@ class Player {
     this.prevLocation = 0;
     this.inJail = false;
     this.jailRolls = 0;
+    this.lostGame = false;
   }
   getMoney(){
     return this._money;
