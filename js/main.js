@@ -15,10 +15,9 @@ board.forEach(function(node) {
     boardSquares.push(obj);
   })
 })
-const allPlayers = [];
 const colors = ["blue", "yellow", "pink", "purple", "brown", "orange"];
 /*----- app's state (variables) -----*/
-let currentPlayer, currentPlayerPropertySets, currentPlayerHouseSets,
+let allPlayers, currentPlayer, currentPlayerPropertySets, currentPlayerHouseSets,
   allPlayersIdx, lastLandedOn, lastRoll, objSquares, housesLeft, hotelsLeft;
 /*----- cached element references -----*/
 const modal = document.querySelector("#modal");
@@ -227,6 +226,14 @@ function landedOn() {
     renderGameHistory(`${currentPlayer.name}: paid 200 for Income Tax`);
   } else if (lastLandedOn.bought && lastLandedOn.owner != currentPlayer) {
     let rent = getRent();
+    if(rent > currentPlayer.getMoney()){
+      renderGameHistory(`${currentPlayer.name}: paid ${currentPlayer.getMoney()} to ${lastLandedOn.owner.name}`);
+      currentPlayer.setMoney(-currentPlayer.getMoney());
+      lastLandedOn.owner.setMoney(currentPlayer.getMoney());
+      checkLose(currentPlayer, lastLandedOn.owner);
+      nextPlayer();
+      return;
+    }
     currentPlayer.setMoney(-rent);
     lastLandedOn.owner.setMoney(rent);
     renderGameHistory(`${currentPlayer.name}: paid ${rent} to ${lastLandedOn.owner.name}`);
@@ -672,6 +679,7 @@ function init() {
   ];
   allPlayersIdx = 0;
   currentSets = [];
+  allPlayers = [];
   lastLandedOn = objSquares[0];
   lastRoll = 0;
   housesLeft = 32;
@@ -1120,17 +1128,40 @@ function getOutOfJail(){
     btn1.disabled = true;
   }
 }
-function checkLose(player){
+function checkLose(player, player2 = undefined){
   if(player.getMoney() <= 0){
+    renderGameHistory(`${player.name}: THIS PLAYER LOST AND IS REMOVED FROM THE GAME`);
+    currentPlayer = allPlayers[allPlayers.indexOf(player)-1];
+    allPlayersIdx = allPlayers.indexOf(player)-1;
     allPlayers = allPlayers.filter(x => x != player);
+    if(player2 != undefined){
+      objSquares = objSquares.map(function (obj){
+        if(obj.owner == player){
+          obj.owner = player2;
+          obj.totalHouses = 0;
+        }
+        return obj;
+      });
+    } else {
+      objSquares = objSquares.map(function (obj){
+        if(obj.owner == player){
+          obj.bought = false;
+          obj.owner = undefined;
+          obj.totalHouses = 0;
+        }
+        return obj;
+      });
+    }
     //display lose message
-    //player loses properties
-    //player property houses is set to zero
     //clear property houses display
+    if(allPlayers.length == 1){
+      //display win message
+    }
+    render();
+    return true;
   }
-  if(allPlayers.length == 1){
-    //display win message
-  }
+  render();
+  return false;
 }
 class Player {
   constructor(name, color) {
