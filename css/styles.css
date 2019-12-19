@@ -47,12 +47,14 @@ body {
   width: 78px;
   height: 50px;
 }
-h1, p{
-  color: blue;
+h3{
+  font-size: 18px;
+  text-transform: capitalize;
+  text-decoration: underline;
 }
 #empty > div {
   visibility: hidden; 
-  background-color: rgba(222, 184, 135, 0.95);
+  background-color: rgba(177, 255, 147, 0.9);
   max-width: 250px;
   text-align: center;
   vertical-align: middle;

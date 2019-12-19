@@ -1124,6 +1124,9 @@ function checkLose(player){
   if(player.getMoney() <= 0){
     allPlayers = allPlayers.filter(x => x != player);
     //display lose message
+    //player loses properties
+    //player property houses is set to zero
+    //clear property houses display
   }
   if(allPlayers.length == 1){
     //display win message
