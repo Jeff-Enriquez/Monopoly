@@ -48,6 +48,8 @@ btn1.addEventListener("click", function() {
       renderBuyHotelsBtn();
       renderBuyHousesBtn();
       tradeBtn.disabled = false;
+    } else {
+      renderGameHistory(`${currentPlayer.name}: does not have enough money to buy ${lastLandedOn.name}`);
     }
     render();
     nextPlayer();
@@ -62,13 +64,19 @@ btn1.addEventListener("click", function() {
       renderGameHistory(`${currentPlayer.name}: paid ${num*obj.houseCost} for ${num} houses`);
       buildHouses(color, num);
       renderBuyHotelsBtn();
+    } else {
+      renderGameHistory(`${currentPlayer.name}: does not have enough money for ${num} houses`);
     }
   } else if(btn1.id == "Pay-50") {
-    currentPlayer.setMoney(-50);
-    currentPlayer.inJail = false; 
-    currentPlayer.jailRolls = 0;
-    renderGameHistory(`${currentPlayer.name}: paid 50 to get out of jail`)
-    render();
+    if(currentPlayer.getMoney() > 50){
+      currentPlayer.setMoney(-50);
+      currentPlayer.inJail = false; 
+      currentPlayer.jailRolls = 0;
+      renderGameHistory(`${currentPlayer.name}: paid 50 to get out of jail`);
+      render();
+    } else {
+      renderGameHistory(`${currentPlayer.name}: does not have enough to get out of jail`);
+    }
   } else if(btn1.id == "hotel"){
     let color = document.querySelector('input[name="foo"]:checked').id;
     let num = Number.parseInt(input.value);
@@ -79,6 +87,8 @@ btn1.addEventListener("click", function() {
       renderGameHistory(`${currentPlayer.name}: paid ${num*obj.houseCost} for ${num} hotels`);
       renderBuyHousesBtn();
       render();
+    } else {
+      renderGameHistory(`${currentPlayer.name}: does not have enough money for ${num} hotels`);
     }
   } else if(btn1.id == "trade"){
     let allProperties = Array.prototype.slice.call(document.querySelectorAll("input:checked"));
@@ -160,7 +170,6 @@ btn2.addEventListener("click", function() {
       currentPlayer.inJail = false;
       currentPlayer.jailRolls = 0;
       landedOn();
-      return;
     } else {
       renderGameHistory(`${currentPlayer.name}: rolled ${roll1}, ${roll2} and is still in jail. You will automatically get out on third roll.`);
       nextPlayer();
@@ -225,6 +234,7 @@ function landedOn() {
     renderBuyProperty();
     return;
   }
+  checkLose(currentPlayer);
   nextPlayer();
 }
 function init() { 
@@ -1108,6 +1118,15 @@ function getOutOfJail(){
   modal.setAttribute("style", "visibility: visible");
   if(currentPlayer.getMoney() < 50){
     btn1.disabled = true;
+  }
+}
+function checkLose(player){
+  if(player.getMoney() <= 0){
+    allPlayers = allPlayers.filter(x => x != player);
+    //display lose message
+  }
+  if(allPlayers.length == 1){
+    //display win message
   }
 }
 class Player {
