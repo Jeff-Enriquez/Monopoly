@@ -16,8 +16,9 @@ board.forEach(function(node) {
   })
 })
 const allPlayers = [];
+const colors = ["blue", "yellow", "pink", "purple", "brown", "orange"];
 /*----- app's state (variables) -----*/
-let player1, player2, currentPlayer, currentPlayerPropertySets, currentPlayerHouseSets,
+let currentPlayer, currentPlayerPropertySets, currentPlayerHouseSets,
   allPlayersIdx, lastLandedOn, lastRoll, objSquares, housesLeft, hotelsLeft;
 /*----- cached element references -----*/
 const modal = document.querySelector("#modal");
@@ -36,19 +37,6 @@ const moneyPArray = document.querySelectorAll(".money");
 const namesH3Array = document.querySelectorAll("h3");
 const gameHistory = document.querySelector("#game-history");
 /*----- event listeners -----*/
-rollDiceBtn.addEventListener("click", function () {
-  if(currentPlayer.inJail){
-    getOutOfJail();
-  }
-  if(!currentPlayer.inJail){
-    rollDice(currentPlayer);
-    renderGameHistory(`${currentPlayer.name}: rolled ${lastRoll}`);
-    lastLandedOn = objSquares[currentPlayer.location];
-    renderPlayerIcon();
-    landedOn();
-    render();
-  }
-});
 btn1.addEventListener("click", function() { 
   modal.setAttribute("style", "visibility: hidden");
   if(btn1.id == "Yes"){
@@ -133,6 +121,13 @@ btn1.addEventListener("click", function() {
     renderBuyHotelsBtn();
     render();
     tradeBtn.disabled = false;
+  } else if (btn1.id == "Add"){
+    let playerName = document.querySelector("#player").value;
+    allPlayers.push(new Player(playerName, colors[allPlayersIdx]));
+    allPlayersIdx++;
+    removeAllChildren(modal);
+    renderGetPlayers();
+    return;
   }
   rollDiceBtn.disabled = false;
   removeAllChildren(modal);
@@ -170,9 +165,29 @@ btn2.addEventListener("click", function() {
       renderGameHistory(`${currentPlayer.name}: rolled ${roll1}, ${roll2} and is still in jail. You will automatically get out on third roll.`);
       nextPlayer();
     }
+  } else if (btn2.id == "Done"){
+    btn1.disabled = false;
+    btn2.disabled = false;
+    allPlayersIdx = 0;
+    currentPlayer = allPlayers[0];
+    render();
+    renderInitialPlayerIcon();
   }
   rollDiceBtn.disabled = false;
   removeAllChildren(modal);
+});
+rollDiceBtn.addEventListener("click", function () {
+  if(currentPlayer.inJail){
+    getOutOfJail();
+  }
+  if(!currentPlayer.inJail){
+    rollDice(currentPlayer);
+    renderGameHistory(`${currentPlayer.name}: rolled ${lastRoll}`);
+    lastLandedOn = objSquares[currentPlayer.location];
+    renderPlayerIcon();
+    landedOn();
+    render();
+  }
 });
 buyHousesBtn.addEventListener("click", function(){
   rollDiceBtn.disabled = true;
@@ -213,16 +228,14 @@ function landedOn() {
   nextPlayer();
 }
 function init() { 
-  player1 = new Player("Jeff", "blue");
-  player2 = new Player("Zane", "yellow");
   objSquares = [
     {
       name: "GO",
     },
     {
       name: "Mediterranean Ave",
-      bought: true,
-      owner: player1,
+      bought: false,
+      owner: undefined,
       cost: 60,
       rent: 2,
       color: "brown",
@@ -240,8 +253,8 @@ function init() {
     },
     {
       name: "Baltic Ave",
-      bought: true,
-      owner: player1,
+      bought: false,
+      owner: undefined,
       cost: 60,
       rent: 4,
       color: "brown",
@@ -266,8 +279,8 @@ function init() {
     },
     {
       name: "Oriental Ave",
-      bought: true,
-      owner: player1,
+      bought: false,
+      owner: undefined,
       cost: 100,
       rent: 6,
       color: "light-blue",
@@ -285,8 +298,8 @@ function init() {
     },
     {
       name: "Vermont Ave",
-      bought: true,
-      owner: player1,
+      bought: false,
+      owner: undefined,
       cost: 100,
       rent: 6,
       color: "light-blue",
@@ -301,8 +314,8 @@ function init() {
     },
     {
       name: "Connecticut Ave",
-      bought: true,
-      owner: player1,
+      bought: false,
+      owner: undefined,
       cost: 120,
       rent: 8,
       color: "light-blue",
@@ -320,8 +333,8 @@ function init() {
     },
     {
       name: "St Charles Place",
-      bought: true,
-      owner: player2,
+      bought: false,
+      owner: undefined,
       cost: 140,
       rent: 10,
       color: "pink",
@@ -336,8 +349,8 @@ function init() {
     },
     {
       name: "Electric Company",
-      bought: true,
-      owner: player2,
+      bought: false,
+      owner: undefined,
       cost: 150,
       color: "utility",
     },
@@ -646,10 +659,8 @@ function init() {
       mortgage: 200,
       totalHouses: 0,
     },
-  ]  
-  allPlayers.push(player1, player2);
+  ];
   allPlayersIdx = 0;
-  currentPlayer = allPlayers[allPlayersIdx];
   currentSets = [];
   lastLandedOn = objSquares[0];
   lastRoll = 0;
@@ -657,29 +668,52 @@ function init() {
   hotelsLeft = 12;
   buyHousesBtn.disabled = true;
   buyHotelsBtn.disabled = true;
-  //tradeBtn.disabled = true;
-  renderInitialPlayerIcon(player1);
-  renderInitialPlayerIcon(player2);
-  render();
+  renderGetPlayers();
+}
+function renderGetPlayers(){
+  rollDiceBtn.disabled = true;
+  buyHousesBtn.disabled = true;
+  tradeBtn.disabled = true;
+  buyHotelsBtn.disabled = true;
+  modalP.textContent = `Enter player name`;
+  modal.appendChild(modalP);
+  let input = document.createElement("input");
+  input.id = "player";
+  modal.appendChild(input);
+  btn1.textContent = "Add Player";
+  btn1.id = "Add";
+  modal.appendChild(btn1);
+  btn2.textContent = "Done";
+  btn2.id = "Done";
+  if(allPlayersIdx > 5){
+    btn1.disabled = true;
+  }
+  if(allPlayers.length <= 1){
+    btn2.disabled = true;
+  } else {
+    btn2.disabled = false;
+  }
+  modal.appendChild(btn2);
+  modal.setAttribute("style", "visibility: visible");
 }
 function render() {
-  moneyPArray[0].textContent = `Money: ${player1.getMoney()}`;
-  moneyPArray[1].textContent = `Money: ${player2.getMoney()}`;
-  moneyPArray[0].innerHTML += `<br>Properties: ${getPlayerProperties(player1)}`;
-  moneyPArray[1].innerHTML += `<br>Properties: ${getPlayerProperties(player2)}`;
+  allPlayers.forEach(function (player, idx){
+    moneyPArray[idx].textContent = `Money: ${player.getMoney()}`;
+    moneyPArray[idx].innerHTML += `<br>Properties: ${getPlayerProperties(player)}`;
+    namesH3Array[idx].textContent = `${player.name}`
+  });
 }
-function renderInitialPlayerIcon(player) {
-  namesH3Array[0].textContent = `${player1.name}`;
-  namesH3Array[1].textContent = `${player2.name}`;
-
-  let playerIcon = document.createElement("div");
-  playerIcon.id = `${player.name}`;
-  playerIcon.style.width = "10px";
-  playerIcon.style.height = "10px";
-  playerIcon.style.cssFloat = "left";
-  playerIcon.style.margin = "2px";
-  playerIcon.style.backgroundColor = player.color;
-  boardSquares[0].appendChild(playerIcon);
+function renderInitialPlayerIcon() {
+  allPlayers.forEach(function (player){
+    let playerIcon = document.createElement("div");
+    playerIcon.id = `${player.name}`;
+    playerIcon.style.width = "10px";
+    playerIcon.style.height = "10px";
+    playerIcon.style.cssFloat = "left";
+    playerIcon.style.margin = "2px";
+    playerIcon.style.backgroundColor = player.color;
+    boardSquares[0].appendChild(playerIcon);
+  });
 }
 function renderBuyHousesDisplay() {
   rollDiceBtn.disabled = true;
