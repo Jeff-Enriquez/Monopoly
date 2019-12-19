@@ -1,8 +1,3 @@
-  /* ------- test function -------- */
-// $( function() {
-//   $( "#accordion" ).accordion();
-// } );
-
 /*----- constants -----*/
 const board = [];
 board.push(document.querySelectorAll("#bottom-row > div"));
