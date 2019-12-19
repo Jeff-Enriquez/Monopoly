@@ -679,9 +679,9 @@ function init() {
       totalHouses: 0,
     },
   ];
+  allPlayers = [];
   allPlayersIdx = 0;
   currentSets = [];
-  allPlayers = [];
   lastLandedOn = objSquares[0];
   lastRoll = 0;
   housesLeft = 32;
@@ -1025,7 +1025,7 @@ function getRent(){
   return lastLandedOn.rent;
 }
 function removeAllChildren(parent){
-  var child = parent.lastElementChild;  
+  let child = parent.lastElementChild;  
   while (child) { 
       parent.removeChild(child); 
       child = parent.lastElementChild; 
@@ -1099,6 +1099,7 @@ function buildHotels(color, num){
 }
 function renderHotel(boardSquaresIdx){
   let house = document.createElement("div");
+  house.className = "house";
   house.style.width = "10px";
   house.style.height = "10px";
   house.style.cssFloat = "left";
@@ -1109,6 +1110,7 @@ function renderHotel(boardSquaresIdx){
 }
 function renderHouse(boardSquaresIdx) {
   let house = document.createElement("div");
+  house.className = "house";
   house.style.width = "10px";
   house.style.height = "10px";
   house.style.cssFloat = "left";
@@ -1141,6 +1143,12 @@ function checkLose(player, player2 = undefined){
         if(obj.owner == player){
           obj.owner = player2;
           obj.totalHouses = 0;
+          let parent = boardSquares[objSquares.indexOf(obj)];
+          let child = parent.querySelector(".house");  
+          while (child) { 
+              parent.removeChild(child); 
+              child = parent.querySelector(".house"); 
+          } 
         }
         return obj;
       });
@@ -1150,14 +1158,24 @@ function checkLose(player, player2 = undefined){
           obj.bought = false;
           obj.owner = undefined;
           obj.totalHouses = 0;
+          let parent = boardSquares[objSquares.indexOf(obj)];
+          let child = parent.querySelector(".house");  
+          while (child) { 
+              parent.removeChild(child); 
+              child = parent.querySelector(".house"); 
+          } 
         }
         return obj;
       });
     }
-    //display lose message
-    //clear property houses display
+    let pIcon = document.querySelector(`#${currentPlayer.name}`);
+    pIcon.parentNode.removeChild(pIcon);
     if(allPlayers.length == 1){
-      //display win message
+      renderGameHistory(`${allPlayers[0]}: CONGRATS, YOU ARE THE WINNER!!!`);
+      rollDiceBtn.disabled = true;
+      buyHotelsBtn.disabled = true;
+      buyHousesBtn.disabled = true;
+      tradeBtn.diabled = true;
     }
     render();
     return true;
