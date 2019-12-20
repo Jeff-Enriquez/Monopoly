@@ -1,4 +1,5 @@
 # Monopoly
+[Play Here](sleepy-cray-d4bb81.netlify.com)
 This project was completed in one week. 
 If you've never played monopoly and would like to learn, click [here](https://www.hasbro.com/common/documents/A0AFE3A69EC745EBA77B9A7950BBCA44/AD7742057B1D43609B53D24D75E9CA9B.pdf).
 I did not have time to implement every feature of the game. There is no Community Chest or Chance cards. Hotels and Houses cannot be sold and properties cannot be mortgaged. Properties cannot be auctioned. All other elements of the game have been implemented.
@@ -9,7 +10,20 @@ I did not have time to implement every feature of the game. There is no Communit
 * JavaScript
 
 ### Screenshots
-
+Start of Game
+<img src="https://i.imgur.com/v7VTDla.png"/>
+Buying Property
+<img src="https://i.imgur.com/kQPMUXu.png"/>
+Buying Houses / Hotels
+<img src="https://i.imgur.com/q22eKf5.png"/>
+<img src="https://i.imgur.com/3yQJkj0.png"/>
+Trading Property
+<img src="https://i.imgur.com/wQn19fM.png"/>
+Go to Jail
+<img src="https://i.imgur.com/CmlUiP4.png"/>
+End Of Game
+<img src="https://i.imgur.com/BvWCstX.png"/>
+  -This one photo is two players so the game would end quicker
 
 ### Getting Started
 Step 1: There must be at least 2 players and a maximum of 8 players.
