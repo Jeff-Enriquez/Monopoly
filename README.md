@@ -10,30 +10,40 @@ I did not have time to implement every feature of the game. There is no Communit
 * JavaScript
 
 ### Screenshots
-Start of Game
+**Start of Game**
 <img src="https://i.imgur.com/v7VTDla.png"/>
-Buying Property
+**Buying Property**
 <img src="https://i.imgur.com/kQPMUXu.png"/>
-Buying Houses / Hotels
+**Buying Houses / Hotels**
 <img src="https://i.imgur.com/q22eKf5.png"/>
 <img src="https://i.imgur.com/3yQJkj0.png"/>
-Trading Property
+**Trading Property**
 <img src="https://i.imgur.com/wQn19fM.png"/>
-Go to Jail
+**Go to Jail**
 <img src="https://i.imgur.com/CmlUiP4.png"/>
-End Of Game
+**End Of Game**
 <img src="https://i.imgur.com/BvWCstX.png"/>
   -This one photo is two players so the game would end quicker
 
 ### Getting Started
 Step 1: There must be at least 2 players and a maximum of 8 players.
   Each player will be assigned their own color icon that moves around the board.
+
 Step 2: Click on the roll dice button.
   Your turn will immediately end after clicking that button. If you'd like to trade or buy houses/hotels, do so before rolling the dice.
+
 How to Win: When a player loses all their money they are out of the game. Last player left is the winner.
-Note 1: The "Buy Houses" and "Buy Hotels" will only display when a player is able to make the purchase
-Note 2: If a player loses all their money by landing on another players property: 1) All houses and hotels of the properties of the losing player will be removed 2) The properties will then be transfered to the other player
-If a player loses by landing on a "Tax" space: 1) All houses and hotels of the properties of the losing player will be removed 2) The properties will be available for purchase when a player lands on it
+
+Note 1: The "Buy Houses" and "Buy Hotels" will only display when a player is able to make the purchase.
+
+Note 2: If a player loses all their money by landing on another players property: 
+    1. All houses and hotels of the properties of the losing player will be removed.
+    2. The properties will then be transfered to the other player.
+
+Note 3: If a player loses all their money by landing on a "Tax" space:
+    1. All houses and hotels of the properties of the losing player will be removed.
+    2. The properties will be available for purchase when a player lands on it.
+
 **IMPORTANT**: When trading, the current player must enter a dollar amount and/or a property to trade with ONE other person. Also, do not enter more money than the player has. Doing this any other way will break the game.
 
 ### Next Steps
