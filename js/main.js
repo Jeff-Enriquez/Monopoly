@@ -1166,7 +1166,7 @@ function checkLose(player, player2 = undefined){
     let pIcon = document.querySelector(`#${currentPlayer.name}`);
     pIcon.parentNode.removeChild(pIcon);
     if(allPlayers.length == 1){
-      renderGameHistory(`${allPlayers[0]}: CONGRATS, YOU ARE THE WINNER!!!`);
+      renderGameHistory(`${allPlayers[0].name}: CONGRATS, YOU ARE THE WINNER!!!`);
       rollDiceBtn.disabled = true;
       buyHotelsBtn.disabled = true;
       buyHousesBtn.disabled = true;
